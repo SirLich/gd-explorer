@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://dycnmhpl7l3ls"]
+[gd_scene load_steps=18 format=3 uid="uid://dycnmhpl7l3ls"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_mmntp"]
+[ext_resource type="Theme" uid="uid://dxajidsclu4uw" path="res://theme.tres" id="1_qqoji"]
 [ext_resource type="Script" path="res://folder_view.gd" id="2_a2gj0"]
 [ext_resource type="Script" path="res://file_tree.gd" id="3_k4cir"]
 [ext_resource type="Texture2D" uid="uid://bwpwukdo3y4lj" path="res://assets/icons/arrow_back_up.png" id="3_l2cmn"]
@@ -9,6 +10,22 @@
 [ext_resource type="Texture2D" uid="uid://bwme1pd42la8v" path="res://assets/icons/file.png" id="5_dnqjo"]
 [ext_resource type="Script" path="res://asset_preview.gd" id="7_1tbub"]
 [ext_resource type="Texture2D" uid="uid://dgiesv7t2suie" path="res://assets/icons/alert_triangle.png" id="7_lp62h"]
+[ext_resource type="Texture2D" uid="uid://b16diu1p1cy4r" path="res://assets/icons/background_blue.png" id="10_gvngl"]
+[ext_resource type="Script" path="res://texture_preview.gd" id="12_d120r"]
+[ext_resource type="Script" path="res://model_preview.gd" id="13_6wmks"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_7hyhu"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_v1vsh"]
+ground_bottom_color = Color(0.721569, 0.654902, 0.580392, 1)
+
+[sub_resource type="Sky" id="Sky_tslvq"]
+sky_material = SubResource("ProceduralSkyMaterial_v1vsh")
+
+[sub_resource type="Environment" id="Environment_jh1xd"]
+background_mode = 2
+background_color = Color(0.529412, 0.376471, 0.843137, 1)
+sky = SubResource("Sky_tslvq")
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -18,6 +35,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
+theme = ExtResource("1_qqoji")
 script = ExtResource("1_mmntp")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
@@ -57,8 +75,9 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="FileTree" type="Tree" parent="HSplitContainer/FolderView/VBoxContainer"]
-custom_minimum_size = Vector2(0, 500)
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+size_flags_vertical = 3
 allow_search = false
 hide_root = true
 script = ExtResource("3_k4cir")
@@ -66,16 +85,109 @@ folder_icon = ExtResource("4_s7b0j")
 file_icon = ExtResource("5_dnqjo")
 error_icon = ExtResource("7_lp62h")
 
-[node name="AssetPreview" type="MarginContainer" parent="HSplitContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer"]
+layout_mode = 2
+
+[node name="ImagePreview" type="MarginContainer" parent="HSplitContainer/MarginContainer" node_paths=PackedStringArray("texture_rect")]
+visible = false
 layout_mode = 2
 script = ExtResource("7_1tbub")
+texture_rect = NodePath("VBoxContainer/MarginContainer/BackgroundTexture/TextureRect")
 
-[node name="TextureRect" type="TextureRect" parent="HSplitContainer/AssetPreview"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/MarginContainer/ImagePreview"]
 layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer"]
+layout_mode = 2
+
+[node name="OptionButton" type="OptionButton" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+item_count = 1
+popup/item_0/text = ""
+popup/item_0/id = 0
+
+[node name="TileButton" type="CheckButton" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Tile"
+
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="BackgroundTexture" type="TextureRect" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/MarginContainer"]
+clip_contents = true
+layout_mode = 2
+texture = ExtResource("10_gvngl")
+stretch_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/MarginContainer/BackgroundTexture"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("4_m5iej")
-expand_mode = 1
-stretch_mode = 4
+stretch_mode = 5
+script = ExtResource("12_d120r")
+
+[node name="ModelPreview" type="MarginContainer" parent="HSplitContainer/MarginContainer" node_paths=PackedStringArray("mesh_instance")]
+layout_mode = 2
+script = ExtResource("13_6wmks")
+mesh_instance = NodePath("VBoxContainer/MarginContainer/SubViewportContainer/SubViewport/MeshInstance3D")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/MarginContainer/ModelPreview"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer"]
+layout_mode = 2
+
+[node name="OptionButton" type="OptionButton" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+item_count = 1
+popup/item_0/text = ""
+popup/item_0/id = 0
+
+[node name="TileButton" type="CheckButton" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Tile"
+
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer"]
+layout_mode = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(930, 593)
+render_target_update_mode = 4
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.676246, -0.736676, 0, 0.736676, 0.676246, 0, 0, -4.11046)
+mesh = SubResource("TorusMesh_7hyhu")
+
+[node name="Camera3D" type="Camera3D" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+environment = SubResource("Environment_jh1xd")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+transform = Transform3D(0.88151, 0, -0.472166, 0.267866, 0.823503, 0.500091, 0.38883, -0.567312, 0.725926, -1.20258, 1.43483, 0)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.33049, 0, -2.91549)
 
 [connection signal="pressed" from="HSplitContainer/FolderView/VBoxContainer/ButtonRow/Button" to="HSplitContainer/FolderView" method="_on_button_pressed"]
 [connection signal="pressed" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/UpButton" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_up_button_pressed"]
 [connection signal="item_activated" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_item_activated"]
+[connection signal="toggled" from="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/HBoxContainer/TileButton" to="HSplitContainer/MarginContainer/ImagePreview" method="_on_tile_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/HBoxContainer/TileButton" to="HSplitContainer/MarginContainer/ImagePreview" method="_on_tile_button_toggled"]

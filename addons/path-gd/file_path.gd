@@ -41,7 +41,8 @@ func _duplicate() -> FilePath:
 	
 ## Returns whether this is a directory, and that it exists
 func directory_exists() -> bool:
-	return DirAccess.open(get_local()).current_is_dir()
+	var g = get_global()
+	return DirAccess.open(get_local()).dir_exists(".")
 
 func join(variadic_path) -> FilePath:
 	if is_file():
