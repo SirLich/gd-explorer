@@ -1,0 +1,81 @@
+[gd_scene load_steps=10 format=3 uid="uid://dycnmhpl7l3ls"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_mmntp"]
+[ext_resource type="Script" path="res://folder_view.gd" id="2_a2gj0"]
+[ext_resource type="Script" path="res://file_tree.gd" id="3_k4cir"]
+[ext_resource type="Texture2D" uid="uid://bwpwukdo3y4lj" path="res://assets/icons/arrow_back_up.png" id="3_l2cmn"]
+[ext_resource type="Texture2D" uid="uid://dmy5uqwlmukij" path="res://icon.svg" id="4_m5iej"]
+[ext_resource type="Texture2D" uid="uid://bf7nqesyedmwy" path="res://assets/icons/folder.png" id="4_s7b0j"]
+[ext_resource type="Texture2D" uid="uid://bwme1pd42la8v" path="res://assets/icons/file.png" id="5_dnqjo"]
+[ext_resource type="Script" path="res://asset_preview.gd" id="7_1tbub"]
+[ext_resource type="Texture2D" uid="uid://dgiesv7t2suie" path="res://assets/icons/alert_triangle.png" id="7_lp62h"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+script = ExtResource("1_mmntp")
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FolderView" type="MarginContainer" parent="HSplitContainer"]
+layout_mode = 2
+script = ExtResource("2_a2gj0")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/FolderView"]
+layout_mode = 2
+
+[node name="ButtonRow" type="HBoxContainer" parent="HSplitContainer/FolderView/VBoxContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="HSplitContainer/FolderView/VBoxContainer/ButtonRow"]
+layout_mode = 2
+text = "Select Root"
+
+[node name="FileTreeRow" type="HBoxContainer" parent="HSplitContainer/FolderView/VBoxContainer"]
+layout_mode = 2
+
+[node name="UpButton" type="Button" parent="HSplitContainer/FolderView/VBoxContainer/FileTreeRow"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+icon = ExtResource("3_l2cmn")
+icon_alignment = 1
+expand_icon = true
+
+[node name="LineEdit" type="LineEdit" parent="HSplitContainer/FolderView/VBoxContainer/FileTreeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FileTree" type="Tree" parent="HSplitContainer/FolderView/VBoxContainer"]
+custom_minimum_size = Vector2(0, 500)
+layout_mode = 2
+allow_search = false
+hide_root = true
+script = ExtResource("3_k4cir")
+folder_icon = ExtResource("4_s7b0j")
+file_icon = ExtResource("5_dnqjo")
+error_icon = ExtResource("7_lp62h")
+
+[node name="AssetPreview" type="MarginContainer" parent="HSplitContainer"]
+layout_mode = 2
+script = ExtResource("7_1tbub")
+
+[node name="TextureRect" type="TextureRect" parent="HSplitContainer/AssetPreview"]
+layout_mode = 2
+texture = ExtResource("4_m5iej")
+expand_mode = 1
+stretch_mode = 4
+
+[connection signal="pressed" from="HSplitContainer/FolderView/VBoxContainer/ButtonRow/Button" to="HSplitContainer/FolderView" method="_on_button_pressed"]
+[connection signal="pressed" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/UpButton" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_up_button_pressed"]
+[connection signal="item_activated" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_item_activated"]
