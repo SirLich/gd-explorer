@@ -1,18 +1,19 @@
-[gd_scene load_steps=18 format=3 uid="uid://dycnmhpl7l3ls"]
+[gd_scene load_steps=19 format=3 uid="uid://dycnmhpl7l3ls"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_mmntp"]
 [ext_resource type="Theme" uid="uid://dxajidsclu4uw" path="res://theme.tres" id="1_qqoji"]
 [ext_resource type="Script" path="res://folder_view.gd" id="2_a2gj0"]
 [ext_resource type="Script" path="res://file_tree.gd" id="3_k4cir"]
 [ext_resource type="Texture2D" uid="uid://bwpwukdo3y4lj" path="res://assets/icons/arrow_back_up.png" id="3_l2cmn"]
-[ext_resource type="Texture2D" uid="uid://dmy5uqwlmukij" path="res://icon.svg" id="4_m5iej"]
 [ext_resource type="Texture2D" uid="uid://bf7nqesyedmwy" path="res://assets/icons/folder.png" id="4_s7b0j"]
 [ext_resource type="Texture2D" uid="uid://bwme1pd42la8v" path="res://assets/icons/file.png" id="5_dnqjo"]
-[ext_resource type="Script" path="res://asset_preview.gd" id="7_1tbub"]
+[ext_resource type="Script" path="res://image_preview_controller.gd" id="7_1tbub"]
 [ext_resource type="Texture2D" uid="uid://dgiesv7t2suie" path="res://assets/icons/alert_triangle.png" id="7_lp62h"]
 [ext_resource type="Texture2D" uid="uid://b16diu1p1cy4r" path="res://assets/icons/background_blue.png" id="10_gvngl"]
-[ext_resource type="Script" path="res://texture_preview.gd" id="12_d120r"]
+[ext_resource type="Texture2D" uid="uid://csd2fqmor2eab" path="res://nauticalTile_101.png" id="11_d8sih"]
+[ext_resource type="Script" path="res://single_image_preview.gd" id="12_v0gxq"]
 [ext_resource type="Script" path="res://model_preview.gd" id="13_6wmks"]
+[ext_resource type="Script" path="res://tiled_image_preview.gd" id="13_t5cgb"]
 
 [sub_resource type="TorusMesh" id="TorusMesh_7hyhu"]
 
@@ -85,109 +86,134 @@ folder_icon = ExtResource("4_s7b0j")
 file_icon = ExtResource("5_dnqjo")
 error_icon = ExtResource("7_lp62h")
 
-[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer"]
+[node name="Previews" type="MarginContainer" parent="HSplitContainer"]
 layout_mode = 2
 
-[node name="ImagePreview" type="MarginContainer" parent="HSplitContainer/MarginContainer" node_paths=PackedStringArray("texture_rect")]
-visible = false
+[node name="ImagePreview" type="MarginContainer" parent="HSplitContainer/Previews" node_paths=PackedStringArray("tiled_image_preview", "single_image_preview")]
 layout_mode = 2
 script = ExtResource("7_1tbub")
-texture_rect = NodePath("VBoxContainer/MarginContainer/BackgroundTexture/TextureRect")
+tiled_image_preview = NodePath("VBoxContainer/MarginContainer/BackgroundTexture/TiledPreview")
+single_image_preview = NodePath("VBoxContainer/MarginContainer/BackgroundTexture/SinglePreview")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/MarginContainer/ImagePreview"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Previews/ImagePreview"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/Previews/ImagePreview/VBoxContainer"]
 layout_mode = 2
 
-[node name="OptionButton" type="OptionButton" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/HBoxContainer"]
+[node name="OptionButton" type="OptionButton" parent="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-item_count = 1
-popup/item_0/text = ""
+item_count = 6
+selected = 1
+popup/item_0/text = "Nearest"
 popup/item_0/id = 0
+popup/item_1/text = "Linear"
+popup/item_1/id = 1
+popup/item_2/text = "Nearest Mipmap"
+popup/item_2/id = 2
+popup/item_3/text = "Linear Mipmap"
+popup/item_3/id = 3
+popup/item_4/text = "Nearest Mip Anositropic"
+popup/item_4/id = 4
+popup/item_5/text = "Linear Mip Anositropic"
+popup/item_5/id = 5
 
-[node name="TileButton" type="CheckButton" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/HBoxContainer"]
+[node name="TileButton" type="CheckButton" parent="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Tile"
 
-[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/Previews/ImagePreview/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="BackgroundTexture" type="TextureRect" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/MarginContainer"]
+[node name="BackgroundTexture" type="TextureRect" parent="HSplitContainer/Previews/ImagePreview/VBoxContainer/MarginContainer"]
 clip_contents = true
 layout_mode = 2
 texture = ExtResource("10_gvngl")
 stretch_mode = 1
 
-[node name="TextureRect" type="TextureRect" parent="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/MarginContainer/BackgroundTexture"]
+[node name="SinglePreview" type="TextureRect" parent="HSplitContainer/Previews/ImagePreview/VBoxContainer/MarginContainer/BackgroundTexture"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("4_m5iej")
+texture = ExtResource("11_d8sih")
 stretch_mode = 5
-script = ExtResource("12_d120r")
+script = ExtResource("12_v0gxq")
 
-[node name="ModelPreview" type="MarginContainer" parent="HSplitContainer/MarginContainer" node_paths=PackedStringArray("mesh_instance")]
+[node name="TiledPreview" type="TextureRect" parent="HSplitContainer/Previews/ImagePreview/VBoxContainer/MarginContainer/BackgroundTexture"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("11_d8sih")
+stretch_mode = 1
+script = ExtResource("13_t5cgb")
+
+[node name="ModelPreview" type="MarginContainer" parent="HSplitContainer/Previews" node_paths=PackedStringArray("mesh_instance")]
+visible = false
 layout_mode = 2
 script = ExtResource("13_6wmks")
 mesh_instance = NodePath("VBoxContainer/MarginContainer/SubViewportContainer/SubViewport/MeshInstance3D")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/MarginContainer/ModelPreview"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Previews/ModelPreview"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer"]
 layout_mode = 2
 
-[node name="OptionButton" type="OptionButton" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/HBoxContainer"]
+[node name="OptionButton" type="OptionButton" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 item_count = 1
 popup/item_0/text = ""
 popup/item_0/id = 0
 
-[node name="TileButton" type="CheckButton" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/HBoxContainer"]
+[node name="TileButton" type="CheckButton" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Tile"
 
-[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer"]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer"]
 layout_mode = 2
 stretch = true
 
-[node name="SubViewport" type="SubViewport" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer"]
 handle_input_locally = false
 size = Vector2i(930, 593)
-render_target_update_mode = 4
+render_target_update_mode = 0
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 0.676246, -0.736676, 0, 0.736676, 0.676246, 0, 0, -4.11046)
 mesh = SubResource("TorusMesh_7hyhu")
 
-[node name="Camera3D" type="Camera3D" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+[node name="Camera3D" type="Camera3D" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
 environment = SubResource("Environment_jh1xd")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
 transform = Transform3D(0.88151, 0, -0.472166, 0.267866, 0.823503, 0.500091, 0.38883, -0.567312, 0.725926, -1.20258, 1.43483, 0)
 
-[node name="OmniLight3D" type="OmniLight3D" parent="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
+[node name="OmniLight3D" type="OmniLight3D" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.33049, 0, -2.91549)
 
 [connection signal="pressed" from="HSplitContainer/FolderView/VBoxContainer/ButtonRow/Button" to="HSplitContainer/FolderView" method="_on_button_pressed"]
 [connection signal="pressed" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/UpButton" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_up_button_pressed"]
 [connection signal="item_activated" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_item_activated"]
-[connection signal="toggled" from="HSplitContainer/MarginContainer/ImagePreview/VBoxContainer/HBoxContainer/TileButton" to="HSplitContainer/MarginContainer/ImagePreview" method="_on_tile_button_toggled"]
-[connection signal="toggled" from="HSplitContainer/MarginContainer/ModelPreview/VBoxContainer/HBoxContainer/TileButton" to="HSplitContainer/MarginContainer/ImagePreview" method="_on_tile_button_toggled"]
+[connection signal="item_selected" from="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer/OptionButton" to="HSplitContainer/Previews/ImagePreview" method="_on_option_button_item_selected"]
+[connection signal="toggled" from="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer/TileButton" to="HSplitContainer/Previews/ImagePreview" method="_on_tile_button_toggled"]
+[connection signal="toggled" from="HSplitContainer/Previews/ModelPreview/VBoxContainer/HBoxContainer/TileButton" to="HSplitContainer/Previews/ImagePreview" method="_on_tile_button_toggled"]
