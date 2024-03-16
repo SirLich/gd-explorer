@@ -1,16 +1,16 @@
-extends MarginContainer
+extends PreviewBase
 
 @export var tiled_image_preview : TextureRect
 @export var single_image_preview : TextureRect
-
-func _ready() -> void:
-	Bus.file_selected.connect(on_file_selected)
 
 func on_file_selected(path : FilePath):
 	if path.is_image():
 		var image = Image.load_from_file(path.get_global())
 		tiled_image_preview.configure(image)
 		single_image_preview.configure(image)
+		visible = true
+	else:
+		visible = false
 
 func _on_tile_button_toggled(toggled_on: bool) -> void:
 	tiled_image_preview.visible = toggled_on
