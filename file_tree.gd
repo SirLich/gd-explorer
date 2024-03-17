@@ -4,6 +4,7 @@ extends Tree
 @export var file_icon : Texture2D
 @export var error_icon : Texture2D
 
+var root : TreeItem
 var project_root : FilePath
 var current_root : FilePath
 
@@ -19,7 +20,7 @@ func _on_project_root_set(project_root):
 
 func build_tree():
 	clear()
-	var root = create_item()
+	root = create_item()
 	for child in current_root.get_children():
 		print("func build_tree")
 		print(child.get_local())
@@ -41,7 +42,10 @@ func _process(delta: float) -> void:
 
 func _on_item_activated() -> void:
 	var selected = get_selected()
-	var filepath : FilePath = selected.get_metadata(0)
+	item_selected(selected)
+	
+func item_selected(item : TreeItem):
+	var filepath : FilePath = item.get_metadata(0)
 	if filepath.is_directory():
 		current_root = filepath
 		build_tree()
@@ -54,3 +58,24 @@ func _on_up_button_pressed() -> void:
 	current_root = current_root.parent
 	print(current_root)
 	build_tree()
+
+
+func _on_line_edit_text_changed(new_text: String) -> void:
+	var compare_text = new_text.to_lower()
+	for item in root.get_children():
+		item.visible = new_text == "" or item.get_text(0).to_lower().contains(compare_text)
+
+func get_next_vis(root_item : TreeItem):
+	for item in root_item.get_children():
+		if item.visible:
+			return item
+	return null
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_released("up_one_folder"):
+		_on_up_button_pressed()
+	
+func _on_line_edit_text_submitted(new_text: String) -> void:
+	var next_valid = get_next_vis(root)
+	if next_valid:
+		item_selected(next_valid)

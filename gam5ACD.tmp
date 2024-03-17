@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dycnmhpl7l3ls"]
+[gd_scene load_steps=20 format=3 uid="uid://dycnmhpl7l3ls"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_mmntp"]
 [ext_resource type="Theme" uid="uid://dxajidsclu4uw" path="res://resources/themes/theme.tres" id="1_qqoji"]
@@ -7,7 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://bwpwukdo3y4lj" path="res://assets/icons/arrow_back_up.png" id="3_l2cmn"]
 [ext_resource type="Texture2D" uid="uid://bf7nqesyedmwy" path="res://assets/icons/folder.png" id="4_s7b0j"]
 [ext_resource type="Texture2D" uid="uid://bwme1pd42la8v" path="res://assets/icons/file.png" id="5_dnqjo"]
-[ext_resource type="Script" path="res://filter.gd" id="5_iu5rq"]
 [ext_resource type="Script" path="res://image_preview_controller.gd" id="7_1tbub"]
 [ext_resource type="Texture2D" uid="uid://dgiesv7t2suie" path="res://assets/icons/alert_triangle.png" id="7_lp62h"]
 [ext_resource type="Texture2D" uid="uid://b16diu1p1cy4r" path="res://assets/icons/background_blue.png" id="10_gvngl"]
@@ -19,7 +18,6 @@
 [ext_resource type="Environment" uid="uid://cdjufam8bf80p" path="res://resources/world_environments/sleepy_hollow.tres" id="15_skdos"]
 [ext_resource type="Script" path="res://perspective_camera.gd" id="15_vtlub"]
 [ext_resource type="Environment" uid="uid://dgv7qwdgbh6qk" path="res://resources/world_environments/gray_box.tres" id="15_yo67b"]
-[ext_resource type="Script" path="res://text_preview.gd" id="20_ine6p"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_mmvfk"]
 
@@ -76,8 +74,6 @@ expand_icon = true
 [node name="LineEdit" type="LineEdit" parent="HSplitContainer/FolderView/VBoxContainer/FileTreeRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-clear_button_enabled = true
-script = ExtResource("5_iu5rq")
 
 [node name="FileTree" type="Tree" parent="HSplitContainer/FolderView/VBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
@@ -164,7 +160,6 @@ stretch_mode = 1
 script = ExtResource("13_t5cgb")
 
 [node name="ModelPreview" type="MarginContainer" parent="HSplitContainer/Previews" node_paths=PackedStringArray("scene_root", "camera", "env")]
-visible = false
 layout_mode = 2
 script = ExtResource("13_6wmks")
 scene_root = NodePath("VBoxContainer/MarginContainer/SubViewportContainer/SubViewport/Center")
@@ -205,7 +200,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer"]
 handle_input_locally = false
 size = Vector2i(930, 593)
-render_target_update_mode = 0
+render_target_update_mode = 4
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
 environment = ExtResource("15_yo67b")
@@ -256,33 +251,9 @@ size_flags_vertical = 3
 texture = ExtResource("10_gvngl")
 stretch_mode = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/Previews" node_paths=PackedStringArray("text_field")]
-layout_mode = 2
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-script = ExtResource("20_ine6p")
-text_field = NodePath("VBoxContainer/TextEdit")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Previews/MarginContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/Previews/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Button" type="Button" parent="HSplitContainer/Previews/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-text = "Example Button"
-
-[node name="TextEdit" type="TextEdit" parent="HSplitContainer/Previews/MarginContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-editable = false
-
 [connection signal="pressed" from="HSplitContainer/FolderView/VBoxContainer/ButtonRow/Button" to="HSplitContainer/FolderView" method="_on_button_pressed"]
 [connection signal="pressed" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/UpButton" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_up_button_pressed"]
 [connection signal="text_changed" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_line_edit_text_changed"]
-[connection signal="text_submitted" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" to="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" method="_on_text_submitted"]
-[connection signal="text_submitted" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_line_edit_text_submitted"]
 [connection signal="item_activated" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_item_activated"]
 [connection signal="item_selected" from="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer/OptionButton" to="HSplitContainer/Previews/ImagePreview" method="_on_option_button_item_selected"]
 [connection signal="toggled" from="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer/TileButton" to="HSplitContainer/Previews/ImagePreview" method="_on_tile_button_toggled"]
