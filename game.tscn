@@ -1,7 +1,5 @@
-[gd_scene load_steps=22 format=3 uid="uid://dycnmhpl7l3ls"]
+[gd_scene load_steps=20 format=3 uid="uid://dycnmhpl7l3ls"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_mmntp"]
-[ext_resource type="Theme" uid="uid://dxajidsclu4uw" path="res://resources/themes/theme.tres" id="1_qqoji"]
 [ext_resource type="Script" path="res://folder_view.gd" id="2_a2gj0"]
 [ext_resource type="Script" path="res://file_tree.gd" id="3_k4cir"]
 [ext_resource type="Texture2D" uid="uid://bwpwukdo3y4lj" path="res://assets/icons/arrow_back_up.png" id="3_l2cmn"]
@@ -23,24 +21,21 @@
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_mmvfk"]
 
-[node name="Main" type="Control"]
-layout_mode = 3
+[node name="MarginContainer" type="MarginContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 4
-theme = ExtResource("1_qqoji")
-script = ExtResource("1_mmntp")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 
 [node name="FolderView" type="MarginContainer" parent="HSplitContainer"]
 layout_mode = 2
@@ -204,7 +199,7 @@ stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer"]
 handle_input_locally = false
-size = Vector2i(930, 593)
+size = Vector2i(2, 2)
 render_target_update_mode = 0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
