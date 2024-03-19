@@ -1,7 +1,7 @@
 @tool
 extends EditorPlugin
 
-const main_panel = preload("res://game.tscn")
+const main_panel = preload("res://addons/gd_explorer/explorer.tscn")
 
 var main_panel_instance
 
@@ -28,7 +28,7 @@ func _make_visible(visible):
 
 
 func _get_plugin_name():
-	return "Main Screen Plugin"
+	return "GDExplorer"
 
 
 func _get_plugin_icon():
