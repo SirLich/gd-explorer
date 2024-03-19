@@ -24,3 +24,7 @@ func _on_button_pressed() -> void:
 
 func set_project_root(root):
 	Bus.project_root_set.emit(root)
+
+
+func _on_root_button_pressed() -> void:
+	pass # Replace with function body.

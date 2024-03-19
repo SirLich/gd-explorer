@@ -3,6 +3,9 @@ extends PreviewBase
 
 @export var tiled_image_preview : TextureRect
 @export var single_image_preview : TextureRect
+@export var background_image : TextureRect
+
+@export var backgrounds : Array[Texture2D]
 
 func on_file_selected(path : FilePath):
 	if path.is_image():
@@ -28,3 +31,12 @@ var FILTERING_INDEX_MAP = [
 func _on_option_button_item_selected(index: int) -> void:
 	tiled_image_preview.texture_filter = FILTERING_INDEX_MAP[index]
 	single_image_preview.texture_filter = FILTERING_INDEX_MAP[index]
+
+
+func _on_color_picker_button_color_changed(color: Color) -> void:
+	tiled_image_preview.modulate = color
+	single_image_preview.modulate = color
+
+
+func _on_background_option_button_item_selected(index: int) -> void:
+	background_image.texture = backgrounds[index]

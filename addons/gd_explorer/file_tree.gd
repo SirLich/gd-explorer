@@ -7,17 +7,15 @@ extends Tree
 
 
 var root : TreeItem
-var project_root : FilePath
+var _project_root : FilePath
 var current_root : FilePath
 
 func _ready() -> void:
 	Bus.project_root_set.connect(_on_project_root_set)
 	
 func _on_project_root_set(project_root):
-	project_root = project_root
-	current_root = project_root
-	print("func _on_project_root_set(project_root):")
-	print(current_root.get_local())
+	_project_root = project_root
+	current_root = _project_root._duplicate()
 	build_tree()
 
 func build_tree():
@@ -56,11 +54,14 @@ func item_selected(item : TreeItem):
 
 
 func _on_up_button_pressed() -> void:
-	print(current_root)
 	current_root = current_root.parent
-	print(current_root)
 	build_tree()
 
+
+func _on_root_button_pressed() -> void:
+	current_root = _project_root._duplicate()
+	build_tree()
+	
 
 func _on_line_edit_text_changed(new_text: String) -> void:
 	var compare_text = new_text.to_lower()
@@ -83,3 +84,7 @@ func _on_line_edit_text_submitted(new_text: String) -> void:
 	var next_valid = get_next_vis(root)
 	if next_valid:
 		item_selected(next_valid)
+
+
+func _on_color_picker_button_color_changed(color: Color) -> void:
+	pass # Replace with function body.
