@@ -343,6 +343,7 @@ editable = false
 [connection signal="text_submitted" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" to="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" method="_on_text_submitted"]
 [connection signal="text_submitted" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_line_edit_text_submitted"]
 [connection signal="item_activated" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_item_activated"]
+[connection signal="item_collapsed" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_item_collapsed"]
 [connection signal="item_selected" from="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer/FilterButton" to="HSplitContainer/Previews/ImagePreview" method="_on_option_button_item_selected"]
 [connection signal="item_selected" from="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer/BackgroundOptionButton" to="HSplitContainer/Previews/ImagePreview" method="_on_background_option_button_item_selected"]
 [connection signal="toggled" from="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer/TileButton" to="HSplitContainer/Previews/ImagePreview" method="_on_tile_button_toggled"]
