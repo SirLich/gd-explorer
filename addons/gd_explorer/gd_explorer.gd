@@ -5,6 +5,9 @@ const main_panel = preload("res://addons/gd_explorer/explorer.tscn")
 
 var main_panel_instance
 
+func _forward_canvas_gui_input(inp):
+	print(inp)
+	
 func _enter_tree():
 	main_panel_instance = main_panel.instantiate()
 	# Add the main panel to the editor's main viewport.

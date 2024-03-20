@@ -1,9 +1,13 @@
 @tool
 extends PreviewBase
 
+signal model_preview_focused(is_focused : bool)
+	
 @export var scene_root : Node3D
 @export var camera : Camera3D
-@export var env : WorldEnvironment
+@export var envs : Array[Environment]
+
+var is_focused = false
 
 func on_file_selected(path : FilePath):
 	if path.suffix == "gltf" or path.suffix == "glb":
@@ -26,15 +30,22 @@ func set_model(path : FilePath):
 	else:
 		push_error("Couldn't load glTF scene (error code: %s)." % error_string(error))
 
+func _process(delta: float) -> void:
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_WHEEL_UP):
+		pass
+		
 func _on_orthographic_button_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		camera.set_orthogonal(2, 0.05, 4000)
 	else:
 		camera.set_perspective(75, 0.05, 4000)
 
-@export var envs : Array[Environment]
-
 func _on_option_button_item_selected(index: int) -> void:
-	print(index)
-	print(envs[index])
-	env.environment = envs[index]
+	camera.environment = envs[index]
+
+func _on_sub_viewport_container_mouse_entered() -> void:
+	is_focused = true
+	model_preview_focused.emit(is_focused)
+func _on_sub_viewport_container_mouse_exited() -> void:
+	is_focused = false
+	model_preview_focused.emit(is_focused)

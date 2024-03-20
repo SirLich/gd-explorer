@@ -55,7 +55,7 @@ func join(variadic_path) -> FilePath:
 
 ## Returns whether this appears to be a file-like object. Does not imply it exists.
 func is_file() -> bool:
-	return name.contains(".")
+	return file_exists()
 
 ## Returns whether this appears to be a dir-like object. Does not imply it exists.
 func is_directory() -> bool:
@@ -76,7 +76,8 @@ func get_children() -> Array[FilePath]:
 func get_directories() -> Array[FilePath]:
 	var out : Array[FilePath] = []
 	for fp in DirAccess.get_directories_at(get_local()):
-		out.append(FilePath.from_string(self.join(fp).get_local()))
+		var t = self.join(fp)
+		out.append(FilePath.from_string(t.get_local()))
 	return out
 
 ## Returns all the files that are a direct child of this path
@@ -109,7 +110,7 @@ func _get_suffix() -> String:
 		push_warning("Suffix for %s could not be resolved, as it appears to be a directory" % get_local())
 		return ""
 		
-	return name.rsplit(".", true, 1)[1]
+	return get_local().get_extension()
 
 ## A list of the path’s file extensions:. res://my/path.temp.png -> ["temp", "png"]
 func _get_suffixes() -> PackedStringArray:
@@ -127,7 +128,7 @@ func _get_name():
 func _get_stem() -> String:
 	if is_directory():
 		push_warning("Stem for %s could not be resolved, as it appears to be a directory" % get_local())
-	return name.split(".")[0]
+	return name.trim_suffix("." + suffix)
 
 ## The directory containing the file, or the parent directory if the path is a directory
 func _get_parent() -> FilePath:
