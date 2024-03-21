@@ -28,6 +28,16 @@ func print_rec(node : Node, depth):
 	print(get_space(depth) + node.to_string())
 	for child in node.get_children(true):
 		print_rec(child, depth + 1)
+
+func replace_recursive(node : Node):
+	if node is ImporterMeshInstance3D:
+		var mesh = MeshInstance3D.new()
+		mesh.set_mesh(node.mesh)
+		node.replace_by(mesh)
+		
+	for child in node.get_children(true):
+		replace_recursive(child)
+	
 	
 func set_model(path : FilePath):
 	viewport.debug_draw
@@ -37,12 +47,18 @@ func set_model(path : FilePath):
 		scene_root.remove_child(n)
 		n.queue_free()
 	
-	scene_root.add_child(test_cube_scene.instantiate())
+	#scene_root.add_child(test_cube_scene.instantiate())
 	var gltf_document_load = GLTFDocument.new()
+	gltf_document_load.register_gltf_document_extension(GLTFDocumentExtensionConvertImporterMesh.new(), true)
 	var gltf_state_load = GLTFState.new()
+	#GLTFDocumentExtensionConvertImporterMesh
+	#gltf_state_load.add_used_extension("convert_importer_mesh", true)
+	
 	var error = gltf_document_load.append_from_file(path.get_global(), gltf_state_load)
 	if error == OK:
 		var gltf_scene_root_node = gltf_document_load.generate_scene(gltf_state_load)
+		replace_recursive(gltf_scene_root_node)
+		GLTFDocumentExtensionConvertImporterMesh
 		print_rec(gltf_scene_root_node, 0)
 		scene_root.add_child(gltf_scene_root_node)
 		gltf_scene_root_node.owner = scene_root
