@@ -6,6 +6,7 @@ extends Tree
 @export var error_icon : Texture2D
 @export var collapse_icon : Texture2D
 
+signal file_selected(filepath : FilePath)
 
 var root : TreeItem
 var _project_root : FilePath
@@ -14,10 +15,9 @@ var current_root : FilePath
 func _ready() -> void:
 	set_column_expand(0, true)
 	set_column_expand(1, false)
-	Bus.project_root_set.connect(_on_project_root_set)
 	
-func _on_project_root_set(project_root):
-	_project_root = project_root
+func _on_folder_view_project_root_set(path: FilePath) -> void:
+	_project_root = path
 	current_root = _project_root._duplicate()
 	
 	root = create_item()
@@ -75,7 +75,7 @@ func item_selected(item : TreeItem):
 		current_root = filepath
 		#build_tree()
 	else:
-		Bus.file_selected.emit(filepath)
+		file_selected.emit(filepath)
 
 
 func _on_up_button_pressed() -> void:

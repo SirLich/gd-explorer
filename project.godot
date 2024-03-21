@@ -16,10 +16,6 @@ run/main_scene="res://addons/gd_explorer/explorer.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://addons/gd_explorer/icon.svg"
 
-[autoload]
-
-Bus="*res://addons/gd_explorer/bus.gd"
-
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gd_explorer/plugin.cfg")

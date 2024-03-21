@@ -1,7 +1,6 @@
-[gd_scene load_steps=28 format=3 uid="uid://dycnmhpl7l3ls"]
+[gd_scene load_steps=24 format=3 uid="uid://dycnmhpl7l3ls"]
 
 [ext_resource type="Script" path="res://addons/gd_explorer/folder_view.gd" id="1_0633k"]
-[ext_resource type="Script" path="res://addons/gd_explorer/explorer.gd" id="1_dlynh"]
 [ext_resource type="Texture2D" uid="uid://bwpwukdo3y4lj" path="res://addons/gd_explorer/assets/icons/arrow_back_up.png" id="2_btc1f"]
 [ext_resource type="Texture2D" uid="uid://cyj286cn70nad" path="res://settings.png" id="2_cvppq"]
 [ext_resource type="Script" path="res://addons/gd_explorer/filter.gd" id="3_8nvym"]
@@ -24,11 +23,6 @@
 [ext_resource type="Script" path="res://addons/gd_explorer/perspective_camera.gd" id="16_cr4uh"]
 [ext_resource type="Script" path="res://addons/gd_explorer/audio_preview.gd" id="17_4olks"]
 [ext_resource type="Script" path="res://addons/gd_explorer/text_preview.gd" id="18_5v67f"]
-[ext_resource type="PackedScene" uid="uid://dunquudwh3i2f" path="res://test.tscn" id="22_tr52l"]
-
-[sub_resource type="World3D" id="World3D_bqvqg"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_1ty3m"]
 
 [node name="MarginContainer" type="MarginContainer"]
 anchors_preset = 15
@@ -42,7 +36,6 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
-script = ExtResource("1_dlynh")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 2
@@ -215,14 +208,12 @@ pivot_offset = Vector2(425, 286.5)
 stretch_mode = 1
 script = ExtResource("12_yvkh7")
 
-[node name="ModelPreview" type="MarginContainer" parent="HSplitContainer/Previews" node_paths=PackedStringArray("scene_root", "camera", "viewport")]
+[node name="ModelPreview" type="MarginContainer" parent="HSplitContainer/Previews" node_paths=PackedStringArray("scene_root", "camera")]
 layout_mode = 2
 script = ExtResource("13_b5hev")
 scene_root = NodePath("VBoxContainer/MarginContainer/SubViewportContainer/SubViewport/Center")
 camera = NodePath("VBoxContainer/MarginContainer/SubViewportContainer/SubViewport/PerspectiveCamera")
 envs = Array[Environment]([ExtResource("14_futio"), ExtResource("15_nxbqw")])
-viewport = NodePath("VBoxContainer/MarginContainer/SubViewportContainer/SubViewport")
-test_cube_scene = ExtResource("22_tr52l")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Previews/ModelPreview"]
 layout_mode = 2
@@ -255,8 +246,6 @@ layout_mode = 2
 stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer"]
-own_world_3d = true
-world_3d = SubResource("World3D_bqvqg")
 handle_input_locally = false
 size = Vector2i(850, 573)
 render_target_update_mode = 4
@@ -270,10 +259,6 @@ transform = Transform3D(0.88151, -4.59743e-07, -0.472166, 0.267866, 0.823503, 0.
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.33049, 0, -2.91549)
 
 [node name="Center" type="Node3D" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport"]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport/Center"]
-transform = Transform3D(1.365, 0, 0, 0, 1.365, 0, 0, 0, 1.365, 0, 0, 0)
-mesh = SubResource("BoxMesh_1ty3m")
 
 [node name="PerspectiveCamera" type="Camera3D" parent="HSplitContainer/Previews/ModelPreview/VBoxContainer/MarginContainer/SubViewportContainer/SubViewport" node_paths=PackedStringArray("center")]
 transform = Transform3D(1, 0, 0, 0, 0.996502, 0.0835696, 0, -0.0835696, 0.996502, 0, 8.35696, 99.6502)
@@ -359,10 +344,6 @@ editable = false
 [connection signal="text_submitted" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" to="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" method="_on_text_submitted"]
 [connection signal="text_submitted" from="HSplitContainer/FolderView/VBoxContainer/FileTreeRow/LineEdit" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_line_edit_text_submitted"]
 [connection signal="button_clicked" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_button_clicked"]
-[connection signal="file_selected" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/Previews/ImagePreview" method="_on_file_tree_file_selected"]
-[connection signal="file_selected" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/Previews/ModelPreview" method="_on_file_tree_file_selected"]
-[connection signal="file_selected" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/Previews/AudioPreview" method="_on_file_tree_file_selected"]
-[connection signal="file_selected" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/Previews/TextPreview" method="_on_file_tree_file_selected"]
 [connection signal="item_activated" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_item_activated"]
 [connection signal="item_collapsed" from="HSplitContainer/FolderView/VBoxContainer/FileTree" to="HSplitContainer/FolderView/VBoxContainer/FileTree" method="_on_item_collapsed"]
 [connection signal="item_selected" from="HSplitContainer/Previews/ImagePreview/VBoxContainer/HBoxContainer/FilterButton" to="HSplitContainer/Previews/ImagePreview" method="_on_option_button_item_selected"]

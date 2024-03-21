@@ -3,10 +3,11 @@ extends EditorPlugin
 
 const main_panel = preload("res://addons/gd_explorer/explorer.tscn")
 
-var main_panel_instance
+var main_panel_instance : Control
 
-func _forward_canvas_gui_input(inp):
-	print(inp)
+func _input(event: InputEvent) -> void:
+	if main_panel_instance.visible:
+		main_panel_instance._input(event)
 	
 func _enter_tree():
 	main_panel_instance = main_panel.instantiate()

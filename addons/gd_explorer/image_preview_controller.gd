@@ -7,9 +7,9 @@ extends PreviewBase
 
 @export var backgrounds : Array[Texture2D]
 
-func on_file_selected(path : FilePath):
-	if path.is_image():
-		var image = Image.load_from_file(path.get_global())
+func _on_file_tree_file_selected(filepath: FilePath) -> void:
+	if filepath.is_image():
+		var image = Image.load_from_file(filepath.get_global())
 		tiled_image_preview.configure(image)
 		single_image_preview.configure(image)
 		visible = true

@@ -1,6 +1,8 @@
 @tool
 extends MarginContainer
 
+signal project_root_set(path : FilePath)
+
 @onready var file_dialog: FileDialog = $FileDialog
 
 var request_ps_path = "res://native/ps/f2.ps1"
@@ -10,8 +12,6 @@ var root : String
 
 func _ready() -> void:
 	native_req = ProjectSettings.globalize_path(request_ps_path)
-	print("_ready")
-	print(default_root.get_local())
 	set_project_root(default_root)
 	
 	
@@ -23,8 +23,5 @@ func _on_button_pressed() -> void:
 	set_project_root(root)
 
 func set_project_root(root):
-	Bus.project_root_set.emit(root)
+	project_root_set.emit(root)
 
-
-func _on_root_button_pressed() -> void:
-	pass # Replace with function body.
