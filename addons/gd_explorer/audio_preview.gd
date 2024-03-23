@@ -3,7 +3,7 @@ extends PreviewBase
 
 @export var player : AudioStreamPlayer
 @export var progress_bar : ProgressBar
-@export var label : Label
+@export var clip_title : Label
 
 var current_stream : AudioStream
 var looping = false
@@ -15,9 +15,14 @@ func _on_file_tree_file_selected(filepath: FilePath) -> void:
 	else:
 		visible = false
 
+func _process(delta: float) -> void:
+	if current_stream and player:
+		progress_bar.value = player.get_playback_position() / current_stream.get_length() * 100
+		
 func handle_file(filepath : FilePath):
 	current_stream = load(filepath.get_local()) as AudioStream
 	
+	clip_title.text = filepath.stem
 	if current_stream is AudioStreamWAV:
 		pass
 		#current_stream.loop_mode = AudioStreamWAV.LOOP_PINGPONG
@@ -32,16 +37,20 @@ func handle_file(filepath : FilePath):
 	
 func _on_loop_button_toggled(toggled_on: bool) -> void:
 	looping = toggled_on
-	current_stream.loop = toggled_on
 
 
 func _on_restart_button_pressed() -> void:
-	pass # Replace with function body.
+	player.play()
 
 
 func _on_play_button_pressed() -> void:
-	pass # Replace with function body.
+	player.play()
 
 
-func _on_stop_button_toggled(toggled_on: bool) -> void:
-	pass # Replace with function body.
+func _on_stop_button_pressed() -> void:
+	player.stop()
+
+
+func _on_audio_stream_player_finished() -> void:
+	if looping:
+		_on_restart_button_pressed()
