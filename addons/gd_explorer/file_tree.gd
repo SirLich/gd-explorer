@@ -77,10 +77,20 @@ func item_selected(item : TreeItem):
 	var filepath : FilePath = item.get_metadata(0)
 	if filepath.is_directory():
 		current_root = filepath
-		#build_tree()
 	else:
-		file_selected.emit(filepath)
+		f_file_selected(filepath)
 
+func f_file_selected(filepath : FilePath):
+	modulate = Color.RED 
+	var new_path = filepath.copy_to_cache()
+	EditorInterface.get_resource_filesystem().scan_sources()
+	EditorInterface.get_resource_filesystem().scan()
+	
+	if not ResourceLoader.exists(new_path.get_local()):
+		await EditorInterface.get_resource_filesystem().filesystem_changed
+	
+	modulate = Color.WHITE 
+	file_selected.emit(new_path)
 
 func _on_up_button_pressed() -> void:
 	current_root = current_root.parent
