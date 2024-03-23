@@ -33,7 +33,13 @@ var suffixes : PackedStringArray : get = _get_suffixes
 var name : String : get = _get_name
 var stem : String : get = _get_stem
 var parent : FilePath : get = _get_parent
-
+	
+func copy_to_cache() -> FilePath:
+	var to_file = FilePath.from_string("res://addons/gd_explorer/cache/").join(name)
+	if not FileAccess.file_exists(to_file.get_global()):
+		DirAccess.copy_absolute(get_global(), to_file.get_global())
+	return to_file
+	
 func _has_root() -> bool:
 	return _root != ""
 
@@ -42,8 +48,7 @@ func _duplicate() -> FilePath:
 	
 ## Returns whether this is a directory, and that it exists
 func directory_exists() -> bool:
-	var g = get_global()
-	return DirAccess.open(get_local()).dir_exists(".")
+	return DirAccess.dir_exists_absolute(get_global())
 
 func join(variadic_path) -> FilePath:
 	if is_file():
@@ -97,8 +102,24 @@ func is_user_path():
 	
 func is_image() -> bool:
 	return contains_any(suffix, [
-		"png", "jpeg", "jpg"
+		"png", "jpeg", "jpg", "ktx", "svg", "tga", "webp"
 	])
+	
+func is_model() -> bool:
+	return contains_any(suffix, [
+		"glb", "gltf"
+	])
+
+func is_native_sound() -> bool:
+	return contains_any(suffix, [
+		"wav", "ogg"
+	])
+	
+func is_sound() -> bool:
+	return is_native_sound()
+	
+func is_known_type() -> bool:
+	return is_model() or is_image() or is_sound()
 	
 ## Returns whether the path is scoped to the res:// directory
 func is_res_path():

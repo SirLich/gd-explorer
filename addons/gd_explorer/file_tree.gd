@@ -35,10 +35,15 @@ func build_tree_recursive(item : TreeItem, path : FilePath):
 	supress_action = true
 
 	for child_path in path.get_children():
+		
+		if not child_path.is_known_type() and not child_path.is_directory():
+			continue
+			
 		var child_item = item.create_child()
 		child_item.set_text(0, child_path.name)
 		if child_path.file_exists():
 			child_item.set_icon(0, file_icon)
+			
 		elif child_path.directory_exists():
 			child_item.set_icon(0, folder_icon)
 				
@@ -48,7 +53,6 @@ func build_tree_recursive(item : TreeItem, path : FilePath):
 			icon = ImageTexture.create_from_image(image)
 			
 			child_item.add_button(1, icon, -1, false, "Press to build asset cache for this folder.")
-			#child_item.set_icon(1, collapse_icon)
 			child_item.set_icon_max_width(1, 24)
 			
 			var dummy = child_item.create_child()
