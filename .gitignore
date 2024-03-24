@@ -1,0 +1,4 @@
+# Godot 4+ specific ignores
+.godot/
+test
+addons/editor_icon_previewer

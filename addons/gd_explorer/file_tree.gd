@@ -161,11 +161,7 @@ func _on_item_collapsed(item: TreeItem) -> void:
 
 func _on_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
 	force_build_recusrive(item)
-
-func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
-	return true
-func _drop_data(at_position: Vector2, data: Variant) -> void:
-	print(data)
+	
 func _get_drag_data(at_position: Vector2) -> Variant:
 	var item : TreeItem = get_item_at_position(at_position)
 	var filepath : FilePath = item.get_metadata(0).get_cache_path()

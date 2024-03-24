@@ -34,6 +34,9 @@ var name : String : get = _get_name
 var stem : String : get = _get_stem
 var parent : FilePath : get = _get_parent
 
+func is_cached():
+	return get_cache_path().exists()
+	
 func get_cache_path() -> FilePath:
 	return FilePath.from_string("res://addons/gd_explorer/cache/").join(name)
 	
