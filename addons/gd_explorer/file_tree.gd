@@ -17,9 +17,8 @@ var _project_root : FilePath
 var current_root : FilePath
 
 func _ready() -> void:
-	set_column_expand(0, false)
-	set_column_expand(1, true)
-	set_column_expand(2, false)
+	set_column_expand(0, true)
+	
 	
 func _on_folder_view_project_root_set(path: FilePath) -> void:
 	_project_root = path
@@ -27,6 +26,8 @@ func _on_folder_view_project_root_set(path: FilePath) -> void:
 	
 	root = create_item()
 	root.set_text(0, "Project")
+	configure_button_for_item(root)
+	
 	build_tree_recursive(root, current_root)
 
 var supress_action
@@ -39,10 +40,16 @@ func force_build_recusrive(item : TreeItem):
 func get_folder_icon():
 	return EditorInterface.get_base_control().get_theme_icon("Folder", "EditorIcons")
 
-func build_tree_recursive(item : TreeItem, path : FilePath):
-	item.set_icon_modulate(0, EC_BLUE)
-	supress_action = true
+func get_icon(name):
+	return EditorInterface.get_base_control().get_theme_icon(name, "EditorIcons")
 
+func configure_button_for_item(item : TreeItem):
+	item.add_button(0, get_icon("EditorCurveHandle"))
+	item.set_button_color(0, 0, EC_LIGHT_GRAY)
+	
+func build_tree_recursive(item : TreeItem, path : FilePath):
+	supress_action = true
+	
 	for child_path in path.get_children():
 		
 		if not child_path.is_known_type() and not child_path.is_directory():
@@ -50,20 +57,17 @@ func build_tree_recursive(item : TreeItem, path : FilePath):
 			
 		var child_item = item.create_child()
 		child_item.set_text(0, child_path.name)
+		
+		# Handle file
 		if child_path.file_exists():
 			child_item.set_icon(0, file_icon)
 			
+		# Handle Directory
 		elif child_path.directory_exists():
 			child_item.set_icon(0, get_folder_icon())
 			child_item.set_icon_modulate(0, EC_LIGHT_GRAY)
 				
-			var icon = collapse_icon.duplicate()
-			var image : Image = icon.get_image()
-			image.resize(24, 24, Image.INTERPOLATE_TRILINEAR)
-			icon = ImageTexture.create_from_image(image)
-			
-			child_item.add_button(2, icon, -1, false, "Press to build asset cache for this folder.")
-			child_item.set_icon_max_width(2, 24)
+			configure_button_for_item(child_item)
 			
 			var dummy = child_item.create_child()
 			dummy.set_meta("dummy", true)
@@ -159,15 +163,23 @@ func _on_line_edit_text_submitted(new_text: String) -> void:
 func _on_color_picker_button_color_changed(color: Color) -> void:
 	pass # Replace with function body.
 
+func is_fully_searchable(item : TreeItem):
+	for child in item.get_children():
+		if is_dummy_folder(child):
+			return false
+	return true
+	
 func _on_item_collapsed(item: TreeItem) -> void:
 	if supress_action:
 		return
 		
-	if item.get_child_count() > 0:
-		if item.get_child(0).has_meta("dummy"):
-			item.get_child(0).free()
-			build_tree_recursive(item, item.get_metadata(0))
-
+	if is_dummy_folder(item):
+		item.get_child(0).free()
+		build_tree_recursive(item, item.get_metadata(0))
+	
+	if is_fully_searchable(item):
+		item.set_icon_modulate(0, EC_BLUE)
+	
 func _on_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
 	force_build_recusrive(item)
 	
