@@ -29,7 +29,6 @@ func _init(string_path : String) -> void:
 	_components = string_path.split("/")
 	
 var suffix : String : get = _get_suffix
-var suffixes : PackedStringArray : get = _get_suffixes
 var name : String : get = _get_name
 var stem : String : get = _get_stem
 var parent : FilePath : get = _get_parent
@@ -57,20 +56,12 @@ func directory_exists() -> bool:
 	return DirAccess.dir_exists_absolute(get_global())
 
 func join(variadic_path) -> FilePath:
-	if is_file():
+	if file_exists():
 		push_warning(".join was called on %s, but it's a file" % get_local())
 		return
 	var new_fp = _duplicate()
 	new_fp._components.append(variadic_path)
 	return new_fp
-
-## Returns whether this appears to be a file-like object. Does not imply it exists.
-func is_file() -> bool:
-	return file_exists()
-
-## Returns whether this appears to be a dir-like object. Does not imply it exists.
-func is_directory() -> bool:
-	return not is_file()
 	
 ## Returns whether this is a file, and that it exists
 func file_exists() -> bool:
@@ -78,9 +69,11 @@ func file_exists() -> bool:
 
 ## Returns all children (direcoties first, then files)
 func get_children() -> Array[FilePath]:
+	Tracker.push("get_children")
 	var out : Array[FilePath] = []
 	out.append_array(get_directories())
 	out.append_array(get_files())
+	Tracker.pop("get_children")
 	return out
 	
 ## Returns all the directories that are a direct child of this path
@@ -124,8 +117,11 @@ func is_native_sound() -> bool:
 func is_sound() -> bool:
 	return is_native_sound()
 	
-func is_known_type() -> bool:
-	return is_model() or is_image() or is_sound()
+func is_interesting() -> bool:
+	Tracker.push("is_interesting")
+	var ret = directory_exists() or is_model() or is_image() or is_sound()
+	Tracker.pop("is_interesting")
+	return ret
 	
 ## Returns whether the path is scoped to the res:// directory
 func is_res_path():
@@ -133,19 +129,7 @@ func is_res_path():
 
 ## The file extension. res://my/path.png -> png
 func _get_suffix() -> String:
-	if is_directory():
-		push_warning("Suffix for %s could not be resolved, as it appears to be a directory" % get_local())
-		return ""
-		
 	return get_local().get_extension()
-
-## A list of the path’s file extensions:. res://my/path.temp.png -> ["temp", "png"]
-func _get_suffixes() -> PackedStringArray:
-	if is_directory():
-		push_warning("Suffixes for %s could not be resolved, as it appears to be a directory" % get_local())
-		return []
-		
-	return name.split(".")[0].split(".")
 
 ## The filename without any directory. res://my/path.png -> path.png
 func _get_name():
@@ -153,8 +137,8 @@ func _get_name():
 
 ## The filename without the file extension
 func _get_stem() -> String:
-	if is_directory():
-		push_warning("Stem for %s could not be resolved, as it appears to be a directory" % get_local())
+	if directory_exists():
+		return ""
 	return name.trim_suffix("." + suffix)
 
 ## The directory containing the file, or the parent directory if the path is a directory
