@@ -1,5 +1,5 @@
 @tool
-extends PreviewBase
+extends MarginContainer
 
 @export var player : AudioStreamPlayer
 @export var progress_bar : ProgressBar

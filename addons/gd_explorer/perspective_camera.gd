@@ -14,9 +14,10 @@ var last_position : Vector2
 var yaw = 0
 var pitch = 0 
 
-func _input(event: InputEvent) -> void:
+
+func _on_explorer_on_input(event: InputEvent) -> void:
 	if is_focused:
-		if event is InputEventMouseButton and event.pressed:
+		if event is InputEventMouseButton:
 			if event.button_index == MOUSE_BUTTON_WHEEL_UP :
 				zoom_radius = zoom_radius * (1 - scroll_amount)
 			if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
@@ -52,3 +53,5 @@ func _process(delta: float) -> void:
 
 func _on_model_preview_model_preview_focused(_is_focused: bool) -> void:
 	is_focused = _is_focused
+
+
