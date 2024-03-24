@@ -164,12 +164,16 @@ func _on_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index
 
 func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 	return true
-
 func _drop_data(at_position: Vector2, data: Variant) -> void:
 	print(data)
+func _get_drag_data(at_position: Vector2) -> Variant:
+	var item : TreeItem = get_item_at_position(at_position)
+	var filepath : FilePath = item.get_metadata(0).get_cache_path()
+	print(filepath.get_local())
 	
-func _on_item_mouse_selected(position: Vector2, mouse_button_index: int) -> void:
-	pass
-	#force_drag(
-		#'{ "type": "files", "files": ["res://folders.png"], "from": "" }', null
-	#)
+	if filepath.is_directory():
+		return null
+	else:
+		return { "type": "files", "files": [filepath.get_local()]}
+		
+	

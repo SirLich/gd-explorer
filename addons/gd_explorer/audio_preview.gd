@@ -7,6 +7,10 @@ extends MarginContainer
 
 var current_stream : AudioStream
 var looping = false
+
+func is_playing() -> bool:
+	return player.playing
+	
 	
 func _on_file_tree_file_selected(filepath: FilePath) -> void:
 	if filepath.is_native_sound():

@@ -33,9 +33,12 @@ var suffixes : PackedStringArray : get = _get_suffixes
 var name : String : get = _get_name
 var stem : String : get = _get_stem
 var parent : FilePath : get = _get_parent
+
+func get_cache_path() -> FilePath:
+	return FilePath.from_string("res://addons/gd_explorer/cache/").join(name)
 	
 func copy_to_cache() -> FilePath:
-	var to_file = FilePath.from_string("res://addons/gd_explorer/cache/").join(name)
+	var to_file = get_cache_path()
 	if not FileAccess.file_exists(to_file.get_global()):
 		DirAccess.copy_absolute(get_global(), to_file.get_global())
 	return to_file
