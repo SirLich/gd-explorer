@@ -2,7 +2,7 @@
 extends MarginContainer
 
 @export var player : AudioStreamPlayer
-@export var progress_bar : ProgressBar
+@export var slider : Slider
 @export var clip_title : Label
 
 var current_stream : AudioStream
@@ -20,8 +20,8 @@ func _on_file_tree_file_selected(filepath: FilePath) -> void:
 		visible = false
 
 func _process(delta: float) -> void:
-	if current_stream and player:
-		progress_bar.value = player.get_playback_position() / current_stream.get_length() * 100
+	if current_stream and player and not player.stream_paused:
+		slider.value = player.get_playback_position() / current_stream.get_length() * 1000
 		
 func handle_file(filepath : FilePath):
 	current_stream = load(filepath.get_local()) as AudioStream
@@ -48,7 +48,7 @@ func _on_restart_button_pressed() -> void:
 
 
 func _on_play_button_pressed() -> void:
-	player.play()
+	player.stream_paused = !player.stream_paused
 
 
 func _on_stop_button_pressed() -> void:
@@ -58,3 +58,12 @@ func _on_stop_button_pressed() -> void:
 func _on_audio_stream_player_finished() -> void:
 	if looping:
 		_on_restart_button_pressed()
+
+
+func _on_h_slider_drag_ended(value_changed: bool) -> void:
+	player.play(slider.value * current_stream.get_length() / 1000)
+	player.stream_paused = false
+	print("Drag ended")
+
+func _on_h_slider_drag_started() -> void:
+	player.stream_paused = true
