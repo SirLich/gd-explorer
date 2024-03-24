@@ -1,6 +1,10 @@
 @tool
 extends Tree
 
+static var EC_BLUE = Color("#63A3DC")
+static var EC_LIGHT_GRAY = Color("#363D4A")
+static var EC_DARK_GRAY = Color("#21262E")
+
 @export var folder_icon : Texture2D
 @export var file_icon : Texture2D
 @export var error_icon : Texture2D
@@ -13,8 +17,9 @@ var _project_root : FilePath
 var current_root : FilePath
 
 func _ready() -> void:
-	set_column_expand(0, true)
-	set_column_expand(1, false)
+	set_column_expand(0, false)
+	set_column_expand(1, true)
+	set_column_expand(2, false)
 	
 func _on_folder_view_project_root_set(path: FilePath) -> void:
 	_project_root = path
@@ -30,8 +35,12 @@ func force_build_recusrive(item : TreeItem):
 	var filepath : FilePath = item.get_metadata(0)
 	item.set_collapsed_recursive(false)
 	item.set_collapsed_recursive(true)
-	
+
+func get_folder_icon():
+	return EditorInterface.get_base_control().get_theme_icon("Folder", "EditorIcons")
+
 func build_tree_recursive(item : TreeItem, path : FilePath):
+	item.set_icon_modulate(0, EC_BLUE)
 	supress_action = true
 
 	for child_path in path.get_children():
@@ -45,15 +54,16 @@ func build_tree_recursive(item : TreeItem, path : FilePath):
 			child_item.set_icon(0, file_icon)
 			
 		elif child_path.directory_exists():
-			child_item.set_icon(0, folder_icon)
+			child_item.set_icon(0, get_folder_icon())
+			child_item.set_icon_modulate(0, EC_LIGHT_GRAY)
 				
 			var icon = collapse_icon.duplicate()
 			var image : Image = icon.get_image()
 			image.resize(24, 24, Image.INTERPOLATE_TRILINEAR)
 			icon = ImageTexture.create_from_image(image)
 			
-			child_item.add_button(1, icon, -1, false, "Press to build asset cache for this folder.")
-			child_item.set_icon_max_width(1, 24)
+			child_item.add_button(2, icon, -1, false, "Press to build asset cache for this folder.")
+			child_item.set_icon_max_width(2, 24)
 			
 			var dummy = child_item.create_child()
 			dummy.set_meta("dummy", true)
@@ -153,7 +163,6 @@ func _on_item_collapsed(item: TreeItem) -> void:
 	if supress_action:
 		return
 		
-	var is_open_action = item.collapsed
 	if item.get_child_count() > 0:
 		if item.get_child(0).has_meta("dummy"):
 			item.get_child(0).free()
@@ -171,5 +180,7 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 		return null
 	else:
 		return { "type": "files", "files": [filepath.get_local()]}
-		
-	
+
+func _on_item_icon_double_clicked() -> void:
+	print("ckick")
+	force_build_recusrive(get_item_at_position(get_global_mouse_position()))
