@@ -3,7 +3,7 @@ extends RefCounted
 class_name FilePath
 
 var _root : String
-var _components : PackedStringArray
+var _string_path : String
 
 var ROOT_DELIM : StringName = "://"
 
@@ -17,21 +17,11 @@ static func contains_any(s: String, opts : PackedStringArray):
 	return false
 	
 func _init(string_path : String) -> void:
-	string_path = string_path.replace("\\\\", "/")
-	string_path = string_path.replace("\\", "/")
-	if string_path.contains(ROOT_DELIM):
-		var split = string_path.split(ROOT_DELIM)
-		_root = split[0]
-		string_path = split[1]
-	string_path = string_path.replace("//", "/")
-	string_path = string_path.replace("//", "/")
-	
-	_components = string_path.split("/")
+	_string_path = string_path
 	
 var suffix : String : get = _get_suffix
 var name : String : get = _get_name
 var stem : String : get = _get_stem
-var parent : FilePath : get = _get_parent
 
 func is_cached():
 	return get_cache_path().exists()
@@ -53,14 +43,17 @@ func _duplicate() -> FilePath:
 	
 ## Returns whether this is a directory, and that it exists
 func directory_exists() -> bool:
-	return DirAccess.dir_exists_absolute(get_global())
-
+	Tracker.push("directory_exists")
+	var ret = DirAccess.dir_exists_absolute(get_local())
+	Tracker.pop("directory_exists")
+	return ret
+	
 func join(variadic_path) -> FilePath:
 	if file_exists():
 		push_warning(".join was called on %s, but it's a file" % get_local())
 		return
 	var new_fp = _duplicate()
-	new_fp._components.append(variadic_path)
+	new_fp._string_path = new_fp._string_path + "/" + variadic_path
 	return new_fp
 	
 ## Returns whether this is a file, and that it exists
@@ -70,26 +63,24 @@ func file_exists() -> bool:
 ## Returns all children (direcoties first, then files)
 func get_children() -> Array[FilePath]:
 	Tracker.push("get_children")
+	
+	var string_paths : PackedStringArray = []
+	string_paths.append_array(get_directories())
+	string_paths.append_array(get_files())
 	var out : Array[FilePath] = []
-	out.append_array(get_directories())
-	out.append_array(get_files())
+	for s in string_paths:
+		out.append(FilePath.from_string(_string_path + "/" + s))
+	
 	Tracker.pop("get_children")
 	return out
 	
 ## Returns all the directories that are a direct child of this path
-func get_directories() -> Array[FilePath]:
-	var out : Array[FilePath] = []
-	for fp in DirAccess.get_directories_at(get_local()):
-		var t = self.join(fp)
-		out.append(FilePath.from_string(t.get_local()))
-	return out
+func get_directories() -> PackedStringArray:
+	return DirAccess.get_directories_at(get_local())
 
 ## Returns all the files that are a direct child of this path
-func get_files() -> Array[FilePath]:
-	var out : Array[FilePath] = []
-	for fp in DirAccess.get_files_at(get_local()):
-		out.append(FilePath.from_string(self.join(fp).get_local()))
-	return out
+func get_files() -> PackedStringArray:
+	return DirAccess.get_files_at(get_local())
 
 ## Returns whether this path appears to be a valid file or directory
 func exists():
@@ -133,23 +124,17 @@ func _get_suffix() -> String:
 
 ## The filename without any directory. res://my/path.png -> path.png
 func _get_name():
-	return _components[_components.size() - 1]
+	return _string_path.get_file()
 
 ## The filename without the file extension
 func _get_stem() -> String:
 	if directory_exists():
 		return ""
 	return name.trim_suffix("." + suffix)
-
-## The directory containing the file, or the parent directory if the path is a directory
-func _get_parent() -> FilePath:
-	return FilePath.from_string(get_local().rsplit("/", true, 1)[0])
-
+	
 ## Gets the local path. Could start with res://, or just some random relative path.
 func get_local() -> String:
-	if _has_root():
-		return _root + ROOT_DELIM + "/".join(_components)
-	return "/".join(_components)
+	return _string_path
 
 ## Gets the global OS level path. e.g., C:/...
 func get_global() -> String:

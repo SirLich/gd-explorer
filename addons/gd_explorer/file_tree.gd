@@ -81,7 +81,7 @@ func _on_item_activated() -> void:
 	
 func item_selected(item : TreeItem):
 	var filepath : FilePath = item.get_metadata(0)
-	if filepath.is_directory():
+	if filepath.directory_exists():
 		current_root = filepath
 	else:
 		f_file_selected(filepath)
@@ -182,7 +182,7 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	var item : TreeItem = get_item_at_position(at_position)
 	var filepath : FilePath = item.get_metadata(0).get_cache_path()
 	
-	if filepath.is_directory():
+	if filepath.directory_exists():
 		return null
 	else:
 		return { "type": "files", "files": [filepath.get_local()]}
