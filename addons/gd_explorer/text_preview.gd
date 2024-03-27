@@ -5,7 +5,7 @@ extends PreviewBase
 @export var copy_button : Button
 
 func _ready() -> void:
-	#copy_button.icon
+	copy_button.icon = GDEUtils.get_icon("ActionCopy")
 	copy_button.pressed.connect(on_copy)
 	
 func on_copy():

@@ -6,9 +6,13 @@ extends PreviewBase
 @export var background_image : TextureRect
 @export var data_label : Label
 @export var backgrounds : Array[Texture2D]
+@export var background_color_button : ColorPickerButton
 
 var is_active = false
 
+func _ready() -> void:
+	background_image.self_modulate = background_color_button.color
+	
 func _on_file_tree_file_selected(filepath: FilePath) -> void:
 	if filepath.is_image():
 		var image = Image.load_from_file(filepath.get_global())
@@ -49,3 +53,7 @@ func _on_margin_container_mouse_entered() -> void:
 	is_active = true
 func _on_margin_container_mouse_exited() -> void:
 	is_active = false
+
+
+func _on_modulate_button_color_changed(color: Color) -> void:
+	background_image.self_modulate = color

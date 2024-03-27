@@ -19,27 +19,21 @@ var current_root : FilePath
 func _ready() -> void:
 	set_column_expand(0, true)
 	
-	
 func _on_folder_view_project_root_set(path: FilePath) -> void:
 	_project_root = path
 	current_root = _project_root._duplicate()
+	
+	clear()
 	
 	root = create_item()
 	root.set_text(0, "Project")
 	configure_button_for_item(root)
 	build_tree_recursive(root, current_root, true)
 	
-
 var supress_action
 
-func get_folder_icon():
-	return EditorInterface.get_base_control().get_theme_icon("Folder", "EditorIcons")
-
-func get_icon(name):
-	return EditorInterface.get_base_control().get_theme_icon(name, "EditorIcons")
-
 func configure_button_for_item(item : TreeItem):
-	item.add_button(0, get_icon("EditorCurveHandle"))
+	item.add_button(0, GDEUtils.get_icon("EditorCurveHandle"))
 	item.set_button_color(0, 0, EC_LIGHT_GRAY)
 
 func set_is_file(item : TreeItem):
@@ -60,7 +54,7 @@ func build_tree_recursive(item : TreeItem, path : FilePath, go_on: bool):
 		var child_item = item.create_child()
 		child_item.set_text(0, dir_path.name)
 		
-		child_item.set_icon(0, get_folder_icon())
+		child_item.set_icon(0, GDEUtils.get_icon("Folder"))
 		child_item.set_meta("is_file", false)
 		child_item.set_icon_modulate(0, EC_LIGHT_GRAY)
 			
@@ -117,10 +111,6 @@ func f_file_selected(filepath : FilePath):
 		
 	modulate = Color.WHITE 
 	file_selected.emit(new_path)
-
-func _on_root_button_pressed() -> void:
-	current_root = _project_root._duplicate()
-	#build_tree()
 
 func is_dummy_folder(item : TreeItem):
 	Tracker.push("is_dummy_folder")
