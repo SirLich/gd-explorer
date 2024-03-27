@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://dunquudwh3i2f"]
-
-[sub_resource type="TorusMesh" id="TorusMesh_7yu0x"]
-
-[node name="Node3D" type="Node3D"]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("TorusMesh_7yu0x")

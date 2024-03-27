@@ -1,5 +1,5 @@
 @tool
-extends PreviewBase
+extends MarginContainer
 
 @export var tiled_image_preview : TextureRect
 @export var single_image_preview : TextureRect

@@ -14,11 +14,10 @@ config/name="dam"
 config/tags=PackedStringArray("addon")
 run/main_scene="res://addons/gd_explorer/explorer.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
-config/icon="res://addons/gd_explorer/icon.svg"
 
 [autoload]
 
-Tracker="*res://tracker.gd"
+Tracker="*res://addons/gd_explorer/scripts/utils/tracker.gd"
 
 [editor_plugins]
 

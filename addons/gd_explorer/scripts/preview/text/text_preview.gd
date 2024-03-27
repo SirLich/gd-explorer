@@ -1,5 +1,5 @@
 @tool
-extends PreviewBase
+extends MarginContainer
 
 @export var text_field : TextEdit
 @export var copy_button : Button

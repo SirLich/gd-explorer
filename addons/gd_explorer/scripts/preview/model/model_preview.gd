@@ -1,5 +1,5 @@
 @tool
-extends PreviewBase
+extends MarginContainer
 
 signal model_preview_focused(is_focused : bool)
 	
