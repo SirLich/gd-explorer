@@ -3,25 +3,22 @@ extends MarginContainer
 
 signal project_root_set(path : FilePath)
 
-@onready var file_dialog: FileDialog = $FileDialog
+@export var file_dialog : FileDialog
 
-var request_ps_path = "res://native/ps/f2.ps1"
-var default_root = FilePath.from_string("C:\\liam\\assets")
-var native_req
-var root : String
+var default_root = "C:\\liam\\assets\\food"
 
 func _ready() -> void:
-	native_req = ProjectSettings.globalize_path(request_ps_path)
 	set_project_root(default_root)
-	
+
+func _on_file_dialog_dir_selected(dir: String) -> void:
+	set_project_root(dir)
 	
 func _on_button_pressed() -> void:
-	var output = []
-	OS.execute("powershell.exe", ["-Command", native_req], output)
-	root = output[0]
-	root = root.left(-len("[Select this folder]") - 1)
-	set_project_root(root)
+	file_dialog.popup_centered()
 
-func set_project_root(root):
-	project_root_set.emit(root)
+func set_project_root(dir):
+	project_root_set.emit(FilePath.from_string(dir))
+
+
+
 

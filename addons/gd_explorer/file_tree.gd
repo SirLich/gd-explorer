@@ -27,8 +27,8 @@ func _on_folder_view_project_root_set(path: FilePath) -> void:
 	root = create_item()
 	root.set_text(0, "Project")
 	configure_button_for_item(root)
+	build_tree_recursive(root, current_root, true)
 	
-	build_tree_recursive(root, current_root)
 
 var supress_action
 
@@ -41,36 +41,54 @@ func get_icon(name):
 func configure_button_for_item(item : TreeItem):
 	item.add_button(0, get_icon("EditorCurveHandle"))
 	item.set_button_color(0, 0, EC_LIGHT_GRAY)
+
+func set_is_file(item : TreeItem):
+	item.set_meta("is_file", true)
+func set_is_folder(item : TreeItem):
+	item.set_meta("is_file", false)
+func is_file(item : TreeItem):
+	return item.get_meta("is_file")
+func is_folder(item : TreeItem):
+	return not is_file(item)
 	
-func build_tree_recursive(item : TreeItem, path : FilePath):
+func build_tree_recursive(item : TreeItem, path : FilePath, go_on: bool):
 	Tracker.push("build_tree_recursive")
 	supress_action = true
-	for child_path in path.get_children():
-		if not child_path.is_interesting():
-			continue
-			
+	
+	for dir_path in path.get_dirs():
+		# SHARED
 		var child_item = item.create_child()
-		child_item.set_text(0, child_path.name)
+		child_item.set_text(0, dir_path.name)
 		
-		# Handle file
-		if child_path.file_exists():
-			child_item.set_icon(0, file_icon)
+		child_item.set_icon(0, get_folder_icon())
+		child_item.set_meta("is_file", false)
+		child_item.set_icon_modulate(0, EC_LIGHT_GRAY)
 			
-		# Handle Directory
-		elif child_path.directory_exists():
-			child_item.set_icon(0, get_folder_icon())
-			child_item.set_icon_modulate(0, EC_LIGHT_GRAY)
-				
-			configure_button_for_item(child_item)
-			
+		configure_button_for_item(child_item)
+		
+		if go_on:
+			build_tree_recursive(child_item, dir_path, go_on)
+		else:
 			var dummy = child_item.create_child()
 			dummy.set_meta("dummy", true)
 			dummy.set_text(0, "...")
 			child_item.collapsed = true
-		else:
-			child_item.set_icon(0, error_icon)
+		
+		# SHARED
 		child_item.set_icon_max_width(0, 24)
-		child_item.set_metadata(0, child_path)
+		child_item.set_metadata(0, dir_path)
+	
+	for f_path in path.get_filess():
+		# SHARED
+		var child_item = item.create_child()
+		child_item.set_text(0, f_path.name)
+		
+		child_item.set_icon(0, file_icon)
+		child_item.set_meta("is_file", true)
+		
+		# SHARED
+		child_item.set_icon_max_width(0, 24)
+		child_item.set_metadata(0, f_path)
 		
 	supress_action = false
 	Tracker.pop("build_tree_recursive")
@@ -89,12 +107,14 @@ func item_selected(item : TreeItem):
 func f_file_selected(filepath : FilePath):
 	modulate = Color.RED 
 	var new_path = filepath.copy_to_cache()
-	EditorInterface.get_resource_filesystem().scan_sources()
-	EditorInterface.get_resource_filesystem().scan()
 	
-	if not ResourceLoader.exists(new_path.get_local()):
-		await EditorInterface.get_resource_filesystem().filesystem_changed
-	
+	# Only resources need loadin
+	if new_path.is_resource():
+		EditorInterface.get_resource_filesystem().scan_sources()
+		EditorInterface.get_resource_filesystem().scan()
+		if not ResourceLoader.exists(new_path.get_local()):
+			await EditorInterface.get_resource_filesystem().filesystem_changed
+		
 	modulate = Color.WHITE 
 	file_selected.emit(new_path)
 
@@ -166,7 +186,7 @@ func _on_item_collapsed(item: TreeItem) -> void:
 	
 	if is_dummy_folder(item):
 		item.get_child(0).free()
-		build_tree_recursive(item, item.get_metadata(0))
+		build_tree_recursive(item, item.get_metadata(0), false)
 	
 	if is_fully_searchable(item):
 		item.set_icon_modulate(0, EC_BLUE)

@@ -77,6 +77,18 @@ func get_children() -> Array[FilePath]:
 ## Returns all the directories that are a direct child of this path
 func get_directories() -> PackedStringArray:
 	return DirAccess.get_directories_at(get_local())
+	
+func get_dirs() -> Array[FilePath]:
+	var out : Array[FilePath] = []
+	for s in DirAccess.get_directories_at(get_local()):
+		out.append(FilePath.from_string(_string_path + "/" + s))
+	return out
+	
+func get_filess() -> Array[FilePath]:
+	var out : Array[FilePath] = []
+	for s in DirAccess.get_files_at(get_local()):
+		out.append(FilePath.from_string(_string_path + "/" + s))
+	return out
 
 ## Returns all the files that are a direct child of this path
 func get_files() -> PackedStringArray:
@@ -89,6 +101,14 @@ func exists():
 ## Returns whether the path is scoped to the user:// directory.
 func is_user_path():
 	return _root == "user"
+
+func is_text() -> bool:
+	return contains_any(suffix, [
+		"txt", "md"
+	])
+
+func is_resource() -> bool:
+	return is_interesting and not is_text()
 	
 func is_image() -> bool:
 	return contains_any(suffix, [
@@ -109,9 +129,7 @@ func is_sound() -> bool:
 	return is_native_sound()
 	
 func is_interesting() -> bool:
-	Tracker.push("is_interesting")
-	var ret = directory_exists() or is_model() or is_image() or is_sound()
-	Tracker.pop("is_interesting")
+	var ret = directory_exists() or is_model() or is_image() or is_sound() or is_text()
 	return ret
 	
 ## Returns whether the path is scoped to the res:// directory
