@@ -6,6 +6,7 @@ signal project_root_set(path : FilePath)
 @export var file_dialog : FileDialog
 @export var select_root_button : Button
 @export var root_line_edit : LineEdit
+@export var clear_cache_button : Button
 
 var default_root = "C:\\liam\\assets\\food"
 
@@ -14,6 +15,7 @@ var root : FilePath
 func _ready() -> void:
 	set_project_root(default_root)
 	select_root_button.icon = GDEUtils.get_icon("Load")
+	clear_cache_button.icon = GDEUtils.get_icon("Clear")
 
 func _on_file_dialog_dir_selected(dir: String) -> void:
 	set_project_root(dir)

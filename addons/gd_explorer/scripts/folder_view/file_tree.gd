@@ -1,9 +1,12 @@
 @tool
 extends Tree
 
-static var EC_BLUE = Color("#63A3DC")
-static var EC_LIGHT_GRAY = Color("#363D4A")
-static var EC_DARK_GRAY = Color("#21262E")
+@onready
+var EC_BLUE = Color("#63A3DC")
+@onready
+var EC_LIGHT_GRAY = Color("#363D4A")
+@onready 
+var EC_DARK_GRAY = Color("#21262E")
 
 @export var folder_icon : Texture2D
 @export var file_icon : Texture2D
@@ -12,15 +15,16 @@ static var EC_DARK_GRAY = Color("#21262E")
 
 @export var cache : GDECache
 
-
 signal file_selected(filepath : FilePath)
-signal resource_file_selected(resource: Resource)
+signal resource_file_selected(filepath: FilePath)
 
 var root : TreeItem
 var _project_root : FilePath
 var current_root : FilePath
 
 func _ready() -> void:
+	#EditorInterface.get_resource_filesystem().get_filesystem()
+	
 	set_column_expand(0, true)
 	
 func _on_folder_view_project_root_set(path: FilePath) -> void:
@@ -105,19 +109,37 @@ func item_selected(item : TreeItem):
 func f_file_selected(filepath : FilePath):
 	modulate = Color.RED 
 	
-	var new_path = filepath.copy_to_cache()
-	if new_path.is_resource():
-		EditorInterface.get_resource_filesystem().scan_sources()
-		EditorInterface.get_resource_filesystem().scan()
-		if not ResourceLoader.exists(new_path.get_local()):
-			await EditorInterface.get_resource_filesystem().filesystem_changed
-			var new_resource = load(new_path.get_local())
-			cache.cache[filepath.get_local()] = new_resource
-			resource_file_selected.emit(new_resource)
+	var cache_path = filepath.copy_to_cache()
+	if cache_path.is_resource():
+		
+		if cache.has_resource(cache_path):
+			print("Already cached:")
+		else: 
+			# Wait if loading is required
+			if not ResourceLoader.exists(cache_path.get_local()):
+				EditorInterface.get_resource_filesystem().scan_sources()
+				EditorInterface.get_resource_filesystem().scan()
+				await EditorInterface.get_resource_filesystem().filesystem_changed
+				
+			var new_resource = load(cache_path.get_local())
+			cache.save_resource(cache_path, new_resource)
+			
+			print("Newly cached:")
+			
+		cache.print()
+			
+		delete_async(cache_path)
+		resource_file_selected.emit(cache_path)
 		
 	modulate = Color.WHITE 
 	#file_selected.emit(new_path)
 
+func delete_async(path : FilePath):
+	await get_tree().create_timer(5).timeout
+	DirAccess.remove_absolute(path.get_local())
+	DirAccess.remove_absolute(path.get_local() + ".import")
+	EditorInterface.get_resource_filesystem().scan()
+	
 func is_dummy_folder(item : TreeItem):
 	Tracker.push("is_dummy_folder")
 	if item.get_child_count() > 0:
@@ -193,12 +215,25 @@ func _on_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index
 	item.set_collapsed_recursive(true)
 	Tracker.pop("_on_button_clicked")
 	Tracker.do_report()
+
+
+func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+	return true
+	
+func _drop_data(at_position: Vector2, data: Variant) -> void:
+	print(data)
 	
 func _get_drag_data(at_position: Vector2) -> Variant:
 	var item : TreeItem = get_item_at_position(at_position)
 	var filepath : FilePath = item.get_metadata(0).get_cache_path()
+	var path_string = filepath.get_local()
+	ResourceSaver.save(cache.get_resource(filepath), path_string)
 	
 	if filepath.directory_exists():
 		return null
 	else:
-		return { "type": "files", "files": [filepath.get_local()]}
+		return { "type": "files", "files": [path_string]}
+		#return { "type": "resource", "resource": cache.get_resource(filepath)}
+
+func _on_clear_cache_button_pressed() -> void:
+	cache.clear()
