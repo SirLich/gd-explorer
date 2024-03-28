@@ -43,9 +43,7 @@ func _duplicate() -> FilePath:
 	
 ## Returns whether this is a directory, and that it exists
 func directory_exists() -> bool:
-	Tracker.push("directory_exists")
 	var ret = DirAccess.dir_exists_absolute(get_local())
-	Tracker.pop("directory_exists")
 	return ret
 	
 func join(variadic_path) -> FilePath:
@@ -62,7 +60,6 @@ func file_exists() -> bool:
 
 ## Returns all children (direcoties first, then files)
 func get_children() -> Array[FilePath]:
-	Tracker.push("get_children")
 	
 	var string_paths : PackedStringArray = []
 	string_paths.append_array(get_directories())
@@ -71,7 +68,6 @@ func get_children() -> Array[FilePath]:
 	for s in string_paths:
 		out.append(FilePath.from_string(_string_path + "/" + s))
 	
-	Tracker.pop("get_children")
 	return out
 	
 ## Returns all the directories that are a direct child of this path
