@@ -104,9 +104,10 @@ func item_selected(item : TreeItem):
 	if filepath.directory_exists():
 		current_root = filepath
 	else:
-		f_file_selected(filepath)
+		item.set_icon_modulate(0, EC_BLUE)
+		f_file_selected(item, filepath)
 
-func f_file_selected(filepath : FilePath):
+func f_file_selected(item : TreeItem, filepath : FilePath):
 	modulate = Color.RED 
 	
 	var cache_path = filepath.copy_to_cache()
@@ -122,6 +123,9 @@ func f_file_selected(filepath : FilePath):
 				await EditorInterface.get_resource_filesystem().filesystem_changed
 				
 			var new_resource = load(cache_path.get_local())
+			if new_resource is Texture:
+				item.set_icon(0, new_resource)
+				item.set_icon_modulate(0, Color.WHITE)
 			cache.save_resource(cache_path, new_resource)
 			
 			print("Newly cached:")
