@@ -23,8 +23,13 @@ var current_root : FilePath
 
 func _ready() -> void:
 	#EditorInterface.get_resource_filesystem().get_filesystem()
-	
+	EditorInterface.get_file_system_dock().files_moved.connect(on_file_moved)
 	set_column_expand(0, true)
+
+func on_file_moved(old : String, new : String):
+	print("MOVED: ")
+	print(old)
+	print(new)
 	
 func _on_folder_view_project_root_set(path: FilePath) -> void:
 	_project_root = path
@@ -136,7 +141,7 @@ func item_selected(item : TreeItem):
 				
 			var new_resource = load(cache_path.get_local())
 			cache.save_resource(cache_path, new_resource)	
-		delete_async(cache_path)
+			delete_async(cache_path)
 		resource_file_selected.emit(cache_path, item)
 		
 	modulate = Color.WHITE 
@@ -204,17 +209,32 @@ func _on_item_collapsed(item: TreeItem) -> void:
 func _on_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
 	toggle_filterable(item)
 	
-func _get_drag_data(at_position: Vector2) -> Variant:
-	var item : TreeItem = get_item_at_position(at_position)
-	var filepath : FilePath = item.get_metadata(0).get_cache_path()
-	var path_string = filepath.get_local()
-	ResourceSaver.save(cache.get_resource(filepath), path_string)
+func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+	return true
 	
-	if filepath.directory_exists():
-		return null
-	else:
-		return { "type": "files", "files": [path_string]}
-		#return { "type": "resource", "resource": cache.get_resource(filepath)}
+func _drop_data(at_position: Vector2, data: Variant) -> void:
+	print(data)
+	
+func _get_drag_data(at_position: Vector2) -> Variant:
+	EditorInterface.get_selected_paths()
+	return { "type": "files", "files": []}
+
+
+	#pass
+	#var item : TreeItem = get_item_at_position(at_position)
+	#var filepath : FilePath = item.get_metadata(0).get_cache_path()
+	#var path_string = filepath.get_local() 
+	#var tres_string = path_string + ".res"
+	#
+	#ResourceSaver.save(cache.get_resource(filepath), tres_string)
+	#DirAccess.rename_absolute(tres_string, path_string)
+	#EditorInterface.get_resource_filesystem().scan()
+	
+	#if filepath.directory_exists():
+		#return null
+	#else:
+		#return { "type": "files", "files": [path_string]}
+		##return { "type": "resource", "resource": cache.get_resource(filepath)}
 
 func _on_clear_cache_button_pressed() -> void:
 	cache.clear()
