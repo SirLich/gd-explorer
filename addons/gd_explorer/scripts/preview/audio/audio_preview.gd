@@ -1,5 +1,5 @@
 @tool
-extends MarginContainer
+extends GDEPreview
 
 @export var player : AudioStreamPlayer
 @export var slider : Slider
@@ -10,21 +10,12 @@ var looping = false
 
 func is_playing() -> bool:
 	return player.playing
-	
-	
-func _on_file_tree_file_selected(filepath: FilePath) -> void:
-	if filepath.is_native_sound():
-		visible = true
-		handle_file(filepath)
-	else:
-		visible = false
 
-func _process(delta: float) -> void:
-	if current_stream and player and not player.stream_paused:
-		slider.value = player.get_playback_position() / current_stream.get_length() * 1000
-		
-func handle_file(filepath : FilePath):
-	current_stream = load(filepath.get_local()) as AudioStream
+func can_handle_file(resource: Resource) -> bool:
+	return resource is AudioStream
+
+func handle_file(resource: Resource, filepath: FilePath, item: TreeItem):
+	current_stream = resource
 	
 	clip_title.text = filepath.stem
 	if current_stream is AudioStreamWAV:
@@ -37,11 +28,13 @@ func handle_file(filepath : FilePath):
 	player.play()
 	
 	current_stream.get_length()
-	
+
+func _process(delta: float) -> void:
+	if current_stream and player and not player.stream_paused:
+		slider.value = player.get_playback_position() / current_stream.get_length() * 1000
 	
 func _on_loop_button_toggled(toggled_on: bool) -> void:
 	looping = toggled_on
-
 
 func _on_restart_button_pressed() -> void:
 	player.play()

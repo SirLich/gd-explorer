@@ -1,5 +1,6 @@
 @tool
 extends Tree
+class_name GDETree
 
 @onready
 var EC_BLUE = Color("#63A3DC")
@@ -7,6 +8,8 @@ var EC_BLUE = Color("#63A3DC")
 var EC_LIGHT_GRAY = Color("#363D4A")
 @onready 
 var EC_DARK_GRAY = Color("#21262E")
+
+var gde_dummy_path = "res://addons/gd_explorer/temp/gde.txt"
 
 @export var folder_icon : Texture2D
 @export var file_icon : Texture2D
@@ -16,6 +19,8 @@ var EC_DARK_GRAY = Color("#21262E")
 @export var cache : GDECache
 
 signal resource_file_selected(filepath: FilePath, item : TreeItem)
+
+var current_dragged_file : String
 
 var root : TreeItem
 var _project_root : FilePath
@@ -27,9 +32,12 @@ func _ready() -> void:
 	set_column_expand(0, true)
 
 func on_file_moved(old : String, new : String):
-	print("MOVED: ")
-	print(old)
-	print(new)
+	if old == gde_dummy_path:
+		var base = current_dragged_file.get_file()
+		var parent = new.get_base_dir() + "/" + base
+		DirAccess.rename_absolute(new, old)
+		
+		DirAccess.copy_absolute(current_dragged_file, parent)
 	
 func _on_folder_view_project_root_set(path: FilePath) -> void:
 	_project_root = path
@@ -68,7 +76,6 @@ func set_filterable(item : TreeItem, value : bool):
 	
 func toggle_filterable(item: TreeItem):
 	var is_filterable = is_filterable(item)
-	print(is_filterable)
 	set_filterable(item, !is_filterable)
 	
 func is_filterable(item: TreeItem) -> bool:
@@ -209,32 +216,10 @@ func _on_item_collapsed(item: TreeItem) -> void:
 func _on_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
 	toggle_filterable(item)
 	
-func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
-	return true
-	
-func _drop_data(at_position: Vector2, data: Variant) -> void:
-	print(data)
-	
 func _get_drag_data(at_position: Vector2) -> Variant:
-	EditorInterface.get_selected_paths()
-	return { "type": "files", "files": []}
-
-
-	#pass
-	#var item : TreeItem = get_item_at_position(at_position)
-	#var filepath : FilePath = item.get_metadata(0).get_cache_path()
-	#var path_string = filepath.get_local() 
-	#var tres_string = path_string + ".res"
-	#
-	#ResourceSaver.save(cache.get_resource(filepath), tres_string)
-	#DirAccess.rename_absolute(tres_string, path_string)
-	#EditorInterface.get_resource_filesystem().scan()
-	
-	#if filepath.directory_exists():
-		#return null
-	#else:
-		#return { "type": "files", "files": [path_string]}
-		##return { "type": "resource", "resource": cache.get_resource(filepath)}
+	var item : TreeItem = get_item_at_position(at_position)
+	current_dragged_file = item.get_metadata(0).get_global()
+	return { "type": "files", "files": [gde_dummy_path]}
 
 func _on_clear_cache_button_pressed() -> void:
 	cache.clear()

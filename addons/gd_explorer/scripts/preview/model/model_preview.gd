@@ -1,5 +1,5 @@
 @tool
-extends MarginContainer
+extends GDEPreview
 
 signal model_preview_focused(is_focused : bool)
 	
@@ -11,38 +11,19 @@ signal model_preview_focused(is_focused : bool)
 
 var is_focused = false
 
-func _on_file_tree_file_selected(filepath: FilePath) -> void:
-	if filepath.suffix == "gltf" or filepath.suffix == "glb":
-		set_model(filepath)
-		visible = true
-	else:
-		visible = false
+func _ready() -> void:
+	super._ready()
 
-func get_space(depth):
-	var out = ""
-	for i in depth:
-		out += "-"
-	return out
-
-func replace_recursive(node : Node):
-	if node is ImporterMeshInstance3D:
-		var mesh = MeshInstance3D.new()
-		mesh.set_mesh(node.mesh)
-		node.replace_by(mesh)
-		
-	for child in node.get_children(true):
-		replace_recursive(child)
+func can_handle_file(resource: Resource) -> bool:
+	return resource is PackedScene
 	
-	
-func set_model(path : FilePath):
+func handle_file(resource: Resource, filepath: FilePath, item: TreeItem):
 	camera.current = false
 	camera.current = true
 	for n in scene_root.get_children():
 		scene_root.remove_child(n)
 		n.queue_free()
-	
-	scene_root.add_child(load(path.get_local()).instantiate())
-
+	scene_root.add_child(resource.instantiate())
 		
 func _on_orthographic_button_toggled(toggled_on: bool) -> void:
 	if toggled_on:

@@ -8,12 +8,10 @@ signal project_root_set(path : FilePath)
 @export var root_line_edit : LineEdit
 @export var clear_cache_button : Button
 
-var default_root = "C:\\liam\\assets\\food"
-
 var root : FilePath
 
 func _ready() -> void:
-	set_project_root(default_root)
+	#set_project_root()
 	select_root_button.icon = GDEUtils.get_icon("Load")
 	clear_cache_button.icon = GDEUtils.get_icon("Clear")
 
