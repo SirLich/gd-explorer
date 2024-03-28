@@ -10,7 +10,11 @@ static var EC_DARK_GRAY = Color("#21262E")
 @export var error_icon : Texture2D
 @export var collapse_icon : Texture2D
 
+@export var cache : GDECache
+
+
 signal file_selected(filepath : FilePath)
+signal resource_file_selected(resource: Resource)
 
 var root : TreeItem
 var _project_root : FilePath
@@ -100,17 +104,19 @@ func item_selected(item : TreeItem):
 
 func f_file_selected(filepath : FilePath):
 	modulate = Color.RED 
-	var new_path = filepath.copy_to_cache()
 	
-	# Only resources need loadin
+	var new_path = filepath.copy_to_cache()
 	if new_path.is_resource():
 		EditorInterface.get_resource_filesystem().scan_sources()
 		EditorInterface.get_resource_filesystem().scan()
 		if not ResourceLoader.exists(new_path.get_local()):
 			await EditorInterface.get_resource_filesystem().filesystem_changed
+			var new_resource = load(new_path.get_local())
+			cache.cache[filepath.get_local()] = new_resource
+			resource_file_selected.emit(new_resource)
 		
 	modulate = Color.WHITE 
-	file_selected.emit(new_path)
+	#file_selected.emit(new_path)
 
 func is_dummy_folder(item : TreeItem):
 	Tracker.push("is_dummy_folder")

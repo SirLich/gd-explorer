@@ -109,6 +109,11 @@ func is_text() -> bool:
 
 func is_resource() -> bool:
 	return is_interesting and not is_text()
+
+func is_font() -> bool:
+	return contains_any(suffix, [
+		"ttf", "ttc", "otf", "otc", "woff", "woff2", "fnt"
+	])
 	
 func is_image() -> bool:
 	return contains_any(suffix, [
@@ -129,7 +134,7 @@ func is_sound() -> bool:
 	return is_native_sound()
 	
 func is_interesting() -> bool:
-	var ret = directory_exists() or is_model() or is_image() or is_sound() or is_text()
+	var ret = directory_exists() or is_model() or is_image() or is_sound() or is_text() or is_font()
 	return ret
 	
 ## Returns whether the path is scoped to the res:// directory
