@@ -23,11 +23,6 @@ func get_space(depth):
 	for i in depth:
 		out += "-"
 	return out
-	
-func print_rec(node : Node, depth):
-	print(get_space(depth) + node.to_string())
-	for child in node.get_children(true):
-		print_rec(child, depth + 1)
 
 func replace_recursive(node : Node):
 	if node is ImporterMeshInstance3D:

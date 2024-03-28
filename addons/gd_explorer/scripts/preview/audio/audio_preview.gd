@@ -63,7 +63,6 @@ func _on_audio_stream_player_finished() -> void:
 func _on_h_slider_drag_ended(value_changed: bool) -> void:
 	player.play(slider.value * current_stream.get_length() / 1000)
 	player.stream_paused = false
-	print("Drag ended")
 
 func _on_h_slider_drag_started() -> void:
 	player.stream_paused = true
