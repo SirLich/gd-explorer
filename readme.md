@@ -41,6 +41,10 @@ This one will be much tricker, because there is so many differnt material types 
  - Importing 3D model switches tabs
  - Add better 3D controls
  - Re add support for text files
+ - Fix issue with icons dissapearing from dropdown
+ - Fix texture filtering not working consistantly
+ - Fix the filesystem from being cleared on godot close
+ - Allow moving images
 
 
 # Release Notes
