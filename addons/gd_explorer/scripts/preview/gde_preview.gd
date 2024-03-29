@@ -16,9 +16,8 @@ func _handle_file(filepath: FilePath, item: TreeItem):
 	else:
 		visible = false
 	
+# Implement These!
 func handle_file(resource: Resource, filepath: FilePath, item: TreeItem):
-	print("'handle file' should always be implemented!")
-	
+	pass
 func can_handle_file(resource: Resource) -> bool:
-	print("'can_handle_file' not implemented")
 	return false

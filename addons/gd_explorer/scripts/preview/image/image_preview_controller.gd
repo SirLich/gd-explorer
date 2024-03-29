@@ -18,6 +18,9 @@ func can_handle_file(resource: Resource) -> bool:
 	return resource is Texture
 	
 func handle_file(resource: Resource, filepath: FilePath, item : TreeItem) -> void:
+	cache.save_thumbnail(filepath, resource)
+	
+	# TODO: Migrate this out
 	item.set_icon(0, resource)
 	item.set_icon_modulate(0, Color.WHITE)
 	
@@ -33,31 +36,23 @@ func _on_tile_button_toggled(toggled_on: bool) -> void:
 
 var FILTERING_INDEX_MAP = [
 	CanvasItem.TEXTURE_FILTER_NEAREST,
-	CanvasItem.TEXTURE_FILTER_LINEAR,
-	CanvasItem.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS,
-	CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS,
-	CanvasItem.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS_ANISOTROPIC,
-	CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	CanvasItem.TEXTURE_FILTER_LINEAR
 ]
 func _on_option_button_item_selected(index: int) -> void:
 	tiled_image_preview.texture_filter = FILTERING_INDEX_MAP[index]
 	single_image_preview.texture_filter = FILTERING_INDEX_MAP[index]
 
-
 func _on_color_picker_button_color_changed(color: Color) -> void:
 	tiled_image_preview.modulate = color
 	single_image_preview.modulate = color
 
-
 func _on_background_option_button_item_selected(index: int) -> void:
 	background_image.texture = backgrounds[index]
-
 
 func _on_margin_container_mouse_entered() -> void:
 	is_active = true
 func _on_margin_container_mouse_exited() -> void:
 	is_active = false
-
 
 func _on_modulate_button_color_changed(color: Color) -> void:
 	background_image.self_modulate = color

@@ -5,6 +5,13 @@ const main_panel = preload("res://addons/gd_explorer/explorer.tscn")
 
 var main_panel_instance : Control
 
+	
+func _ready() -> void:
+	resource_saved.connect(on_resource_saved)
+
+func on_resource_saved(resource: Resource):
+	main_panel_instance.on_resource_saved(resource)
+	
 func _input(event: InputEvent) -> void:
 	if main_panel_instance != null and main_panel_instance.visible:
 		main_panel_instance._input(event)

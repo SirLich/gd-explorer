@@ -11,11 +11,6 @@ var EC_DARK_GRAY = Color("#21262E")
 
 var gde_dummy_path = "res://addons/gd_explorer/temp/gde.txt"
 
-@export var folder_icon : Texture2D
-@export var file_icon : Texture2D
-@export var error_icon : Texture2D
-@export var collapse_icon : Texture2D
-
 @export var cache : GDECache
 
 signal resource_file_selected(filepath: FilePath, item : TreeItem)
@@ -27,8 +22,9 @@ var _project_root : FilePath
 var current_root : FilePath
 
 func _ready() -> void:
-	#EditorInterface.get_resource_filesystem().get_filesystem()
 	EditorInterface.get_file_system_dock().files_moved.connect(on_file_moved)
+	cache.root_changed.connect(root_changed)
+	
 	set_column_expand(0, true)
 
 func on_file_moved(old : String, new : String):
@@ -38,8 +34,9 @@ func on_file_moved(old : String, new : String):
 		DirAccess.copy_absolute(current_dragged_file, parent)
 		await get_tree().process_frame
 		DirAccess.rename_absolute(new, old)
-	
-func _on_folder_view_project_root_set(path: FilePath) -> void:
+
+# Signal
+func root_changed(path: FilePath) -> void:
 	_project_root = path
 	current_root = _project_root._duplicate()
 	
@@ -48,6 +45,7 @@ func _on_folder_view_project_root_set(path: FilePath) -> void:
 	root = create_item()
 	root.set_text(0, "Project")
 	configure_button_for_item(root)
+	set_is_folder(root)
 	build_tree_recursive(root, current_root, true)
 	root.collapsed = false
 	
@@ -63,7 +61,9 @@ func set_is_folder(item : TreeItem):
 	item.set_meta("is_file", false)
 func is_file(item : TreeItem) -> bool:
 	return item.get_meta("is_file")
-	
+func get_filepath(item: TreeItem) -> FilePath:
+	return item.get_metadata(0)
+
 func set_filterable(item : TreeItem, value : bool):
 	if value:
 		item.set_icon_modulate(0, EC_BLUE)
@@ -83,6 +83,18 @@ func is_filterable(item: TreeItem) -> bool:
 	
 func is_folder(item : TreeItem):
 	return not is_file(item)
+
+## Sets the icons icon and color, either from cache, or a default type
+func set_file_icon_and_color(item : TreeItem):
+	var filepath = get_filepath(item)
+	if cache.has_thumbnail(filepath):
+		item.set_icon(0, cache.get_thumbnail(filepath))
+	else:
+		item.set_icon(0, GDEUtils.get_icon("File"))
+		if cache.has_resource(filepath):
+			item.set_icon_modulate(0, EC_BLUE)
+		else:
+			item.set_icon_modulate(0, EC_LIGHT_GRAY)
 	
 func build_tree_recursive(item : TreeItem, path : FilePath, go_on: bool):
 	supress_action = true
@@ -115,12 +127,13 @@ func build_tree_recursive(item : TreeItem, path : FilePath, go_on: bool):
 		var child_item = item.create_child()
 		child_item.set_text(0, f_path.name)
 		
-		child_item.set_icon(0, file_icon)
-		child_item.set_meta("is_file", true)
-		
 		# SHARED
 		child_item.set_icon_max_width(0, 24)
 		child_item.set_metadata(0, f_path)
+		
+		# TODO LIAM
+		set_file_icon_and_color(child_item)
+		child_item.set_meta("is_file", true)
 	
 	item.collapsed = true
 	supress_action = false
@@ -134,27 +147,29 @@ func item_selected(item : TreeItem):
 		item.collapsed = not item.collapsed
 		return
 		
-	var filepath : FilePath = item.get_metadata(0)
-	item.set_icon_modulate(0, EC_BLUE)
+	var filepath : FilePath = get_filepath(item)
+	item.set_icon_modulate(0, EC_BLUE) # TODO Move somewhere else
 
-	modulate = Color.RED 
+	# If resource exists, our life is easy
+	if cache.has_resource(filepath):
+		resource_file_selected.emit(filepath, item)
+		return 
+		
 	var cache_path = filepath.copy_to_cache()
 	if cache_path.is_resource():
-		
-		if not cache.has_resource(cache_path):
-			EditorInterface.get_resource_filesystem().scan_sources()
-			EditorInterface.get_resource_filesystem().scan()
+		EditorInterface.get_resource_filesystem().scan()
+		if not ResourceLoader.exists(cache_path.get_local()):
 			await EditorInterface.get_resource_filesystem().filesystem_changed
-				
-			var new_resource = load(cache_path.get_local())
-			cache.save_resource(cache_path, new_resource)	
-			delete_async(cache_path)
-		resource_file_selected.emit(cache_path, item)
+		
+		var new_resource = load(cache_path.get_local())
+		cache.save_resource(filepath, new_resource)
+		delete_async(cache_path)
+		resource_file_selected.emit(filepath, item)
 		
 	modulate = Color.WHITE 
 
 func delete_async(path : FilePath):
-	await get_tree().create_timer(5).timeout
+	await get_tree().process_frame
 	DirAccess.remove_absolute(path.get_local())
 	DirAccess.remove_absolute(path.get_local() + ".import")
 	EditorInterface.get_resource_filesystem().scan()
@@ -164,9 +179,8 @@ func is_dummy_folder(item : TreeItem):
 		if item.get_child(0).has_meta("dummy"):
 			return true
 	return false
-	
+
 func set_visibility_recursive(text : String, item : TreeItem):
-	
 	var vis = false
 	for child in item.get_children():
 		if is_folder(child):
@@ -203,7 +217,7 @@ func _on_item_collapsed(item: TreeItem) -> void:
 		return
 	if is_dummy_folder(item):
 		item.get_child(0).free()
-		build_tree_recursive(item, item.get_metadata(0), false)
+		build_tree_recursive(item, get_filepath(item), false)
 	
 func _on_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
 	toggle_filterable(item)
@@ -216,8 +230,16 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	
 func _get_drag_data(at_position: Vector2) -> Variant:
 	var item : TreeItem = get_item_at_position(at_position)
-	current_dragged_file = item.get_metadata(0).get_global()
+	current_dragged_file = get_filepath(item).get_global()
 	return { "type": "files", "files": [gde_dummy_path]}
 
+func set_file_icons_recursive(item : TreeItem):
+	if is_file(item):
+		set_file_icon_and_color(item)
+	else:
+		for child in item.get_children():
+			set_file_icons_recursive(child)
+	
 func _on_clear_cache_button_pressed() -> void:
 	cache.clear()
+	set_file_icons_recursive(root)

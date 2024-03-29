@@ -25,9 +25,9 @@ var stem : String : get = _get_stem
 
 func is_cached():
 	return get_cache_path().exists()
-	
+
 func get_cache_path() -> FilePath:
-	return FilePath.from_string("res://addons/gd_explorer/cache/").join(name)
+	return FilePath.from_string("res://addons/gd_explorer/cache/import_cache/").join(get_hash() + "." + suffix)
 	
 func copy_to_cache() -> FilePath:
 	var to_file = get_cache_path()
@@ -150,6 +150,9 @@ func _get_stem() -> String:
 	if directory_exists():
 		return ""
 	return name.trim_suffix("." + suffix)
+
+func get_hash():
+	return get_local().sha256_text()
 	
 ## Gets the local path. Could start with res://, or just some random relative path.
 func get_local() -> String:
