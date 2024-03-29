@@ -9,7 +9,8 @@ var EC_LIGHT_GRAY = Color("#363D4A")
 @onready 
 var EC_DARK_GRAY = Color("#21262E")
 
-var gde_dummy_path = "res://addons/gd_explorer/temp/gde.txt"
+var gde_dummy_path = "res://addons/gd_explorer/cache/gde.txt"
+var gde_extra = "res://addons/gd_explorer/cache/gde_extra.txt"
 
 @export var cache : GDECache
 
@@ -28,7 +29,7 @@ func _ready() -> void:
 	set_column_expand(0, true)
 
 func on_file_moved(old : String, new : String):
-	if old == gde_dummy_path:
+	if old == gde_dummy_path:		
 		var base = current_dragged_file.get_file()
 		var parent = new.get_base_dir() + "/" + base
 		DirAccess.copy_absolute(current_dragged_file, parent)
@@ -90,7 +91,7 @@ func set_file_icon_and_color(item : TreeItem):
 	if cache.has_thumbnail(filepath):
 		item.set_icon(0, cache.get_thumbnail(filepath))
 	else:
-		item.set_icon(0, GDEUtils.get_icon("File"))
+		item.set_icon(0, filepath.get_icon())
 		if cache.has_resource(filepath):
 			item.set_icon_modulate(0, EC_BLUE)
 		else:
@@ -131,7 +132,6 @@ func build_tree_recursive(item : TreeItem, path : FilePath, go_on: bool):
 		child_item.set_icon_max_width(0, 24)
 		child_item.set_metadata(0, f_path)
 		
-		# TODO LIAM
 		set_file_icon_and_color(child_item)
 		child_item.set_meta("is_file", true)
 	
@@ -229,6 +229,9 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	print(data)
 	
 func _get_drag_data(at_position: Vector2) -> Variant:
+	if not FileAccess.file_exists(gde_dummy_path):
+		DirAccess.copy_absolute(gde_extra, gde_dummy_path)
+		
 	var item : TreeItem = get_item_at_position(at_position)
 	current_dragged_file = get_filepath(item).get_global()
 	return { "type": "files", "files": [gde_dummy_path]}

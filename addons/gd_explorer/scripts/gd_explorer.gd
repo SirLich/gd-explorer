@@ -18,6 +18,10 @@ func _input(event: InputEvent) -> void:
 	
 func _enter_tree():
 	main_panel_instance = main_panel.instantiate()
+	
+	var import_cache = "res://addons/gd_explorer/cache/import_cache"
+	if not DirAccess.dir_exists_absolute(import_cache):
+		DirAccess.make_dir_recursive_absolute(import_cache)
 	EditorInterface.get_editor_main_screen().add_child(main_panel_instance)
 	_make_visible(false)
 

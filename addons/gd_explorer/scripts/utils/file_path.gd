@@ -103,6 +103,20 @@ func is_text() -> bool:
 		"txt", "md"
 	])
 
+func get_icon():
+	if is_font():
+		return GDEUtils.get_icon("FontFile")
+	if is_image():
+		return GDEUtils.get_icon("ImageTexture")
+	if is_model():
+		return GDEUtils.get_icon("MeshInstance3D")
+	if is_sound():
+		return GDEUtils.get_icon("AudioStream")
+	if is_text():
+		return GDEUtils.get_icon("TextFile")
+		
+	return GDEUtils.get_icon("File")
+	
 func is_resource() -> bool:
 	return is_interesting and not is_text()
 

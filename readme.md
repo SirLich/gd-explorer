@@ -20,7 +20,7 @@ Model Preview currently supports .gltf, .glb, but all supported Godot types will
 
 Audio Preview currently supports .wav, .ogg, but all supported godot types will be supported soon.
 
-Controls include: Pause, play, restart, paning, looping, and a spectrum analyzer.
+Controls include: Pause, play, restart, paning, looping, and a spectrum analyzer (note: Requires adding the filter to the main bus)
 
 # Text Preview
 
@@ -28,7 +28,7 @@ You can also technically preview text files (e.g., markdown, text, licenses)
 
 # Font Preview
 
-Coming soon!
+Font preview supports oft, ttf, among others. Will add proper editing soon, so you can write your own preview text.
 
 # Material Preview
 
@@ -37,20 +37,21 @@ This one will be much tricker, because there is so many differnt material types 
 # TODO
 
  - Fix log spam related to the SpectrumAnylyzer missing by default
- - Create cache folder and other important files on startup, if missing
- - Check cache when starting up, to try and provide icons on load
  - Prevent all files from being expanded when clearing the search
  - Importing 3D model switches tabs
  - Add better 3D controls
  - Re add support for text files
- - Add better icons for resource types
+
 
 # Release Notes
 
-
 ## 0.0.3
+
  - Files with the same name no longer clash with each other 
  - Project root is now cached. Will add more settings later.
+ - Add better icons for resource types
+ - Check cache when starting up, to try and provide icons on load
+ - Create cache folder and other important files on startup, if missing
 
 ## 0.0.2
 
