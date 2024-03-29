@@ -34,4 +34,33 @@ Coming soon!
 
 This one will be much tricker, because there is so many differnt material types and such. Probably no support for now.
 
+# TODO
+
+ - Fix log spam related to the SpectrumAnylyzer missing by default
+ - Create cache folder and other important files on startup, if missing
+ - Cache user settings, especially project root
+ - Prevent name clash in the cache (use full original path)
+ - Check cache when starting up, to try and provide icons on load
+ - Prevent all files from being expanded when clearing the search
+ - Importing 3D model switches tabs
+ - Add better 3D controls
+ - Re add support for text files
+
+# Release Notes
+
+
+## 0.0.3
+
+ - Unreleased
+
+## 0.0.2
+
+ - Fixed issue where the 'gde.txt' dummy file was deleted rather than copied, preventing you from importing more than one asset.
+ - Fixed log spam when input was processed before the main control node was available.
+ - Added editor-friendly icons to the audio preview
+
+## 0.0.1
+
+ - The first testing release. Contained generally the feature set claimed above, but a bit buggy and badly organized.
+
  

@@ -35,9 +35,9 @@ func on_file_moved(old : String, new : String):
 	if old == gde_dummy_path:
 		var base = current_dragged_file.get_file()
 		var parent = new.get_base_dir() + "/" + base
-		DirAccess.rename_absolute(new, old)
-		
 		DirAccess.copy_absolute(current_dragged_file, parent)
+		await get_tree().process_frame
+		DirAccess.rename_absolute(new, old)
 	
 func _on_folder_view_project_root_set(path: FilePath) -> void:
 	_project_root = path
@@ -198,14 +198,6 @@ func get_next_vis(root_item : TreeItem):
 func _on_search_submitted(new_text: String) -> void:
 	pass # Replace with function body.
 	
-func _on_line_edit_text_submitted(new_text: String) -> void:
-	var next_valid = get_next_vis(root)
-	if next_valid:
-		item_selected(next_valid)
-
-func _on_color_picker_button_color_changed(color: Color) -> void:
-	pass # Replace with function body.
-	
 func _on_item_collapsed(item: TreeItem) -> void:
 	if supress_action:
 		return
@@ -215,6 +207,12 @@ func _on_item_collapsed(item: TreeItem) -> void:
 	
 func _on_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
 	toggle_filterable(item)
+
+func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+	return true
+	
+func _drop_data(at_position: Vector2, data: Variant) -> void:
+	print(data)
 	
 func _get_drag_data(at_position: Vector2) -> Variant:
 	var item : TreeItem = get_item_at_position(at_position)
@@ -223,6 +221,3 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 
 func _on_clear_cache_button_pressed() -> void:
 	cache.clear()
-
-
-
