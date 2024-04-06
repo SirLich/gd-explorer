@@ -5,7 +5,7 @@ extends MarginContainer
 @export var select_root_button : Button
 @export var root_line_edit : LineEdit
 @export var clear_cache_button : Button
-@export var cache : GDECache
+@onready var cache : GDECache = %Data.cache
 
 func _ready() -> void:
 	set_project_root(cache.get_root_string())

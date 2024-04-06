@@ -2,7 +2,7 @@
 extends MarginContainer
 class_name GDEPreview
 
-@export var cache : GDECache
+@onready var cache : GDECache = %Data.cache
 @onready var file_tree : GDETree = %FileTree
 
 func _ready() -> void:

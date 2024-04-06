@@ -12,7 +12,7 @@ var EC_DARK_GRAY = Color("#21262E")
 var gde_dummy_path = "res://addons/gd_explorer/cache/gde.txt"
 var gde_extra = "res://addons/gd_explorer/cache/gde_extra.txt"
 
-@export var cache : GDECache
+@onready var cache : GDECache = %Data.cache
 
 signal resource_file_selected(filepath: FilePath, item : TreeItem)
 
@@ -246,3 +246,4 @@ func set_file_icons_recursive(item : TreeItem):
 func _on_clear_cache_button_pressed() -> void:
 	cache.clear()
 	set_file_icons_recursive(root)
+	

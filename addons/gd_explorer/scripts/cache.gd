@@ -6,8 +6,8 @@ class_name GDECache
 @export var resources : Array[Resource]
 @export var thumbnail_index_map = {}
 @export var thumbnails : Array[Texture]
+@export var project_root : String
 
-@export var _project_root : String
 signal root_changed(filepath: FilePath)
 signal resource_saved(resource: Resource)
 
@@ -53,18 +53,18 @@ func save_resource(path : FilePath, resource : Resource) -> Resource:
 
 
 func get_root_string() -> String:
-	return _project_root
+	return project_root
 	
 func get_root() -> FilePath:
-	return FilePath.from_string(_project_root)
+	return FilePath.from_string(project_root)
 
 # Variant: Takes either filepath or string
-func set_root(filepath):
-	if filepath is String:
-		filepath = FilePath.from_string(filepath)
-		
-	_project_root = filepath.get_local()
-	root_changed.emit(filepath)
+func set_root(fp):
+	if fp is String:
+		fp = FilePath.from_string(fp)
+	project_root = fp.get_local()
+	print("Setting root: %s" % project_root)
+	root_changed.emit(fp)
 	
 func print():
 	print("Index Map:")
