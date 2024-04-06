@@ -3,6 +3,8 @@
 GD Explorer is an asset explorer addon for Godot. It allows you to browse your asset library 
 in a dedicated tab, prior to importing. 
 
+Check out the showcase video here: https://www.youtube.com/watch?v=YOonjwOQJgg
+
 # Image Explorer
 
 The image explorer currently supports .png and .jpg, but all supported Godot types will be coming
